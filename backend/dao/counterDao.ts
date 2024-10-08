@@ -1,5 +1,5 @@
-import db from "./db"
-import { Counter } from "./Counter"
+import db from "../db"
+import { Counter } from "../models/Counter"
 
 
 class CounterDAO {
@@ -125,3 +125,5 @@ public getAllCounters(): Promise<Counter[]> {
      })
     }
 }
+
+export default CounterDAO;

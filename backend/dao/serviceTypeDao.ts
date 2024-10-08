@@ -1,0 +1,103 @@
+import db from "../db";
+import { ServiceType } from "../models/ServiceType";
+
+
+class ServiceTypeDAO {
+  public createServiceType(name: string, avg_service_time: number): Promise<boolean> {
+        return new Promise<boolean>((resolve, reject) => {
+            try {
+                // if arrivalDate is not null and is after the current date, throw a DateError
+                if (name.trim().length == 0 || avg_service_time < 0){
+                    // TODO: reject with custom error
+                    //reject(new DateError());
+                    return;
+                }
+                const sql = "INSERT INTO ServiceTypes(name, avg_service_time) VALUES(?, ?)"
+                db.run(sql, [name, avg_service_time], (err: Error | null) => {
+                    if (err) {
+                        // TODO: add custom error for non unique service type 
+                        //if (err.message.includes("UNIQUE constraint failed: products.model")) reject(new ProductAlreadyExistsError);
+                        reject(err);
+                    }
+                    resolve(true);
+                })
+            } catch (error) {
+                reject(error);
+            }
+
+        })
+    }
+
+public getAllServiceTypes(): Promise<ServiceType[]> {
+        return new Promise<ServiceType[]>((resolve, reject) => {
+            try {
+                // if arrivalDate is not null and is after the current date, throw a DateError
+                const sql = "SELECT * FROM ServiceType;"
+                db.all(sql, [], (err: Error | null, rows: any[]) => {
+                    if (err) {
+                        // TODO: add custom error for non unique serv type
+                        //if (err.message.includes("UNIQUE constraint failed: products.model")) reject(new ProductAlreadyExistsError);
+                        reject(err);
+                    }
+                    const serviceTypes: ServiceType[] = rows.map(row => new ServiceType(row.service_type_id, row.name, row.avg_service_time));
+                    resolve(serviceTypes);
+                })
+            } catch (error) {
+                reject(error);
+            }
+
+        })
+    }
+
+    public getServiceType(service_type_id: number): Promise<ServiceType> {
+        return new Promise<ServiceType>((resolve, reject) => {
+            try {
+                if (service_type_id < 0) {
+                    // TODO: reject with custom error
+                    //reject(new DateError());
+                    return;
+                }
+                const sql = "SELECT * FROM ServiceTypes WHERE service_type_id = ?;"
+                db.get(sql, [service_type_id], (err: Error | null, row: any) => {
+                    if (err) {
+                        // TODO: add custom error for non unique counter
+                        //if (err.message.includes("UNIQUE constraint failed: products.model")) reject(new ProductAlreadyExistsError);
+                        reject(err);
+                    }
+                    if (!row) {
+                      //TODO: add custom error for counter not found
+                      //reject(new UserNotFoundError())
+                    return
+                    }
+                    const serviceType: ServiceType = new ServiceType(row.service_type_id, row.name, row.avg_service_time);
+                    resolve(serviceType);
+                })
+            } catch (error) {
+                reject(error);
+            }
+
+        })
+    }
+
+
+    deleteServiceType(service_type_id: number): Promise<Boolean> {
+            return new Promise<Boolean>((resolve, reject) => {
+                const sql = "DELETE FROM ServiceTypes WHERE service_type_id=?"
+                db.run(sql, [service_type_id], function(err: Error | null){
+                    if(err){
+                        reject(err)
+                        return
+                    }
+                      if(this.changes === 0){
+                          // TODO: reject with custom error
+                          //reject(new UserNotFoundError())
+                          return
+                      }
+                      resolve(true)
+                  })
+              })
+    }
+
+}
+
+export default ServiceTypeDAO;
