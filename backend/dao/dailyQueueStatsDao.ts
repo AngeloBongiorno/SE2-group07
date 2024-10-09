@@ -1,5 +1,6 @@
 import db from "../db"
 import { DailyQueueStat } from "../models/dailyQueueStat";
+import { ItemAlreadyExistsError } from "./errors";
 
 
 function formatDateForSQL(date: Date): string {
@@ -28,11 +29,15 @@ class DailyQueueStatDAO {
                 const sql = "INSERT INTO DailyQueueStats (counter_id, service_type_id, date, served_count) VALUES (?, ?, ?, ?)"
                 db.run(sql, [counter_id, service_type_id, formatDateForSQL(date), served_count], (err: Error | null) => {
                     if (err) {
-                        // TODO: add custom error for non unique counter
-                        //if (err.message.includes("UNIQUE constraint failed: products.model")) reject(new ProductAlreadyExistsError);
-                        reject(err);
+                        if (err.message.includes("UNIQUE constraint failed: DailyQueueStats.stat_id")) {
+                          reject(new ItemAlreadyExistsError());
+                        } else {
+                          reject(err);
+                        }
+                        return;
                     }
                     resolve(true);
+                    return;
                 })
             } catch (error) {
                 reject(error);
@@ -147,3 +152,5 @@ class DailyQueueStatDAO {
 
 }
 
+
+export { DailyQueueStat }

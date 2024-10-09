@@ -14,7 +14,7 @@ class CounterDAO {
                 const sql = "INSERT INTO Counters(name) VALUES(?)"
                 db.run(sql, [name], (err: Error | null) => {
                     if (err) {
-                        if (err.message.includes("UNIQUE constraint failed: products.model")) reject(new ItemAlreadyExistsError);
+                        if (err.message.includes("UNIQUE constraint failed: Counter.counter_id")) reject(new ItemAlreadyExistsError);
                         reject(err);
                     }
                     resolve(true);
@@ -72,7 +72,7 @@ public getAllCounters(): Promise<Counter[]> {
     }
 
 
-    deleteCounter(counter_id: number): Promise<Boolean> {
+    public deleteCounter(counter_id: number): Promise<Boolean> {
             return new Promise<Boolean>((resolve, reject) => {
                 const sql = "DELETE FROM Counters WHERE counter_id=?"
                 db.run(sql, [counter_id], function(err: Error | null){
@@ -90,7 +90,7 @@ public getAllCounters(): Promise<Counter[]> {
     }
 
 
-    updateCounter(counter_id: number, name: string): Promise<Counter>{
+    public updateCounter(counter_id: number, name: string): Promise<Counter>{
       return new Promise<Counter>((resolve, reject) =>{
         const sqlUpdate = "UPDATE Counters SET name=? WHERE counter_id=?"
         db.run(sqlUpdate, [name, counter_id], (err: Error | null) => {

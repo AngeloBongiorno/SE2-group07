@@ -1,6 +1,6 @@
 import db from "../db";
 import { ServiceType } from "../models/ServiceType";
-import { InvalidInputError, ItemNotFoundError } from "./errors";
+import { InvalidInputError, ItemNotFoundError, ItemAlreadyExistsError } from "./errors";
 
 
 class ServiceTypeDAO {
@@ -14,8 +14,11 @@ class ServiceTypeDAO {
                 const sql = "INSERT INTO ServiceTypes(name, avg_service_time) VALUES(?, ?)"
                 db.run(sql, [name, avg_service_time], (err: Error | null) => {
                     if (err) {
-                        // TODO: add custom error for non unique service type 
-                        reject(err);
+                        if (err.message.includes("UNIQUE constraint failed: ServiceTypes.service_type_id")) {
+                          reject(new ItemAlreadyExistsError());
+                        } else {
+                          reject(err);
+                        }
                         return;
                     }
                     resolve(true);
