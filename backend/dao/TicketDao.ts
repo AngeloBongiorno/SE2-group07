@@ -2,7 +2,7 @@ import db from "../db"
 import { Ticket, Status } from "../models/Ticket"
 
 
-function formatDateForSQL(date: Date | null): string | null {
+function formatTimestampForSQL(date: Date | null): string | null {
     if (!date) return null; // Return null if the date is null
     return date.toISOString(); // Format as ISO 8601 string
 }
@@ -23,7 +23,7 @@ class TicketDAO {
                   sql = "INSERT INTO Tickets(service_type_id, queue_position) VALUES(?, ?)";
                   inputs = [service_type_id, queue_position];
                 } else {
-                  const formatted_issued_at = formatDateForSQL(issued_at);
+                  const formatted_issued_at = formatTimestampForSQL(issued_at);
                   sql = "INSERT INTO Tickets(service_type_id, queue_position, issued_at) VALUES(?, ?, ?)";
                   inputs = [service_type_id, queue_position, formatted_issued_at];
                 }
@@ -128,7 +128,7 @@ public getAllTickets(): Promise<Ticket[]> {
         const values: (Status | number | string | null)[] = [];
 
         if (called_at) {
-                const formatted_called_at = formatDateForSQL(called_at);
+                const formatted_called_at = formatTimestampForSQL(called_at);
                 updates.push(" called_at = ?");
                 values.push(formatted_called_at);
             }
