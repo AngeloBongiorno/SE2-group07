@@ -10,6 +10,7 @@
   "author": "se2-group07",
   "license": "ISC",
   "dependencies": {
+    "backend": "file:",
     "cors": "^2.8.5",
     "express": "^4.21.1",
     "sqlite3": "^5.1.7"
