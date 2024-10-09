@@ -1,5 +1,5 @@
-CREATE DATABASE office_queue_management;
-USE office_queue_management;
+-- CREATE DATABASE office_queue_management;
+-- USE office_queue_management;
 
 -- Create the Counters table
 CREATE TABLE Counters (
@@ -30,7 +30,7 @@ CREATE TABLE Tickets (
     queue_position INT NOT NULL,
     issued_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     called_at TIMESTAMP NULL, -- Will be filled when the ticket is called
-    status ENUM('waiting', 'called', 'served') DEFAULT 'waiting',
+    status INT DEFAULT 0,
     FOREIGN KEY (service_type_id) REFERENCES ServiceTypes(service_type_id) ON DELETE CASCADE
 );
 
