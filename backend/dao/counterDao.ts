@@ -1,22 +1,20 @@
 import db from "../db"
 import { Counter } from "../models/Counter"
+import { InvalidInputError, ItemAlreadyExistsError, ItemNotFoundError } from "./errors";
 
 
 class CounterDAO {
   public createCounter(name: string): Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
             try {
-                // if arrivalDate is not null and is after the current date, throw a DateError
                 if (name.trim().length == 0){
-                    // TODO: reject with custom error
-                    //reject(new DateError());
+                    reject(new InvalidInputError());
                     return;
                 }
                 const sql = "INSERT INTO Counters(name) VALUES(?)"
                 db.run(sql, [name], (err: Error | null) => {
                     if (err) {
-                        // TODO: add custom error for non unique counter
-                        //if (err.message.includes("UNIQUE constraint failed: products.model")) reject(new ProductAlreadyExistsError);
+                        if (err.message.includes("UNIQUE constraint failed: products.model")) reject(new ItemAlreadyExistsError);
                         reject(err);
                     }
                     resolve(true);
@@ -31,12 +29,9 @@ class CounterDAO {
 public getAllCounters(): Promise<Counter[]> {
         return new Promise<Counter[]>((resolve, reject) => {
             try {
-                // if arrivalDate is not null and is after the current date, throw a DateError
                 const sql = "SELECT * FROM Counters;"
                 db.all(sql, [], (err: Error | null, rows: any[]) => {
                     if (err) {
-                        // TODO: add custom error for non unique counter
-                        //if (err.message.includes("UNIQUE constraint failed: products.model")) reject(new ProductAlreadyExistsError);
                         reject(err);
                     }
                     const counters: Counter[] = rows.map(row => new Counter(row.counter_id, row.name));
@@ -53,21 +48,18 @@ public getAllCounters(): Promise<Counter[]> {
         return new Promise<Counter>((resolve, reject) => {
             try {
                 if (id < 0) {
-                    // TODO: reject with custom error
-                    //reject(new DateError());
+                    reject(new InvalidInputError());
                     return;
                 }
                 const sql = "SELECT * FROM Counters WHERE counter_id = ?;"
                 db.get(sql, [id], (err: Error | null, row: any) => {
                     if (err) {
-                        // TODO: add custom error for non unique counter
-                        //if (err.message.includes("UNIQUE constraint failed: products.model")) reject(new ProductAlreadyExistsError);
                         reject(err);
+                        return;
                     }
                     if (!row) {
-                      //TODO: add custom error for counter not found
-                      //reject(new UserNotFoundError())
-                    return
+                      reject(new ItemNotFoundError())
+                    return;
                     }
                     const counter: Counter = new Counter(row.counter_id, row.name);
                     resolve(counter);
@@ -89,8 +81,7 @@ public getAllCounters(): Promise<Counter[]> {
                         return
                     }
                       if(this.changes === 0){
-                          // TODO: reject with custom error
-                          //reject(new UserNotFoundError())
+                          reject(new ItemNotFoundError())
                           return
                       }
                       resolve(true)
@@ -114,8 +105,7 @@ public getAllCounters(): Promise<Counter[]> {
                     return;
                 }   
                 if(!row){
-                    //TODO: add custom error
-                    //reject(new UserNotFoundError())
+                    reject(new ItemNotFoundError())
                     return;
                 }
                 const counter: Counter = new Counter(row.counter_id, row.name);

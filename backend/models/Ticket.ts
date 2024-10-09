@@ -16,7 +16,7 @@ class Ticket {
      * @param queue_position: where the ticket stands in its queue_position
      * @param issued_at - the ticket was issued at this time
      * @param called_at - the ticket was called at this time
-     * @param atatus - can be either waiting, called or served
+     * @param status - can be either waiting, called or served
      */
     constructor(ticket_id: number, service_type_id: number, queue_position: number, issued_at: Date, called_at: Date | null, status: Status) {
         this.ticket_id = ticket_id;

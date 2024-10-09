@@ -1,20 +1,16 @@
 import db from "../db"
 import { Ticket, Status } from "../models/Ticket"
+import { InvalidInputError, ItemAlreadyExistsError, ItemNotFoundError } from "./errors";
+import dayjs from "dayjs";
 
 
-function formatTimestampForSQL(date: Date | null): string | null {
-    if (!date) return null; // Return null if the date is null
-    return date.toISOString(); // Format as ISO 8601 string
-}
 
 class TicketDAO {
   public createTicket(service_type_id: number, queue_position: number, issued_at: Date | null ): Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
             try {
-                // if arrivalDate is not null and is after the current date, throw a DateError
                 if (service_type_id < 0 || queue_position < 0){
-                    // TODO: reject with custom error
-                    //reject(new DateError());
+                    reject(new InvalidInputError());
                     return;
                 }
                 let sql: string;
@@ -23,17 +19,18 @@ class TicketDAO {
                   sql = "INSERT INTO Tickets(service_type_id, queue_position) VALUES(?, ?)";
                   inputs = [service_type_id, queue_position];
                 } else {
-                  const formatted_issued_at = formatTimestampForSQL(issued_at);
+                  const formatted_issued_at = dayjs(issued_at).toISOString();
                   sql = "INSERT INTO Tickets(service_type_id, queue_position, issued_at) VALUES(?, ?, ?)";
                   inputs = [service_type_id, queue_position, formatted_issued_at];
                 }
                 db.run(sql, inputs, (err: Error | null) => {
                     if (err) {
-                        // TODO: add custom error for non unique ticket
-                        //if (err.message.includes("UNIQUE constraint failed: products.model")) reject(new ProductAlreadyExistsError);
+                        if (err.message.includes("UNIQUE constraint failed: Tickets.ticket_id")) reject(new ItemAlreadyExistsError());
                         reject(err);
+                        return;
                     }
                     resolve(true);
+                    return;
                 })
             } catch (error) {
                 reject(error);
@@ -42,22 +39,22 @@ class TicketDAO {
         })
     }
 
-public getAllTickets(): Promise<Ticket[]> {
+    public getAllTickets(): Promise<Ticket[]> {
         return new Promise<Ticket[]>((resolve, reject) => {
             try {
                 const sql = "SELECT * FROM Tickets;"
                 db.all(sql, [], (err: Error | null, rows: any[]) => {
                     if (err) {
-                        // TODO: add custom error for non unique ticket
-                        //if (err.message.includes("UNIQUE constraint failed: products.model")) reject(new ProductAlreadyExistsError);
                         reject(err);
+                        return;
                     }
                     const tickets: Ticket[] = rows.map(row => new Ticket(row.ticket_id,
                                                                         row.service_type_id,row.queue_position,
-                                                                        row.issued_at,
-                                                                        row.called_at,
+                                                                        dayjs(row.issued_at).toDate(),
+                                                                        row.called_at ? dayjs(row.called_at).toDate() : null,
                                                                         row.status));
                     resolve(tickets);
+                    return;
                 })
             } catch (error) {
                 reject(error);
@@ -70,21 +67,23 @@ public getAllTickets(): Promise<Ticket[]> {
         return new Promise<Ticket>((resolve, reject) => {
             try {
                 if (ticket_id < 0) {
-                    // TODO: reject with custom error
-                    //reject(new DateError());
+                    reject(new InvalidInputError());
                     return;
                 }
                 const sql = "SELECT * FROM Tickets WHERE ticket_id = ?;"
                 db.get(sql, [ticket_id], (err: Error | null, row: any) => {
                     if (err) {
                         // TODO: add custom error for non unique counter
-                        //if (err.message.includes("UNIQUE constraint failed: products.model")) reject(new ProductAlreadyExistsError);
-                        reject(err);
+                        if (err.message.includes("UNIQUE constraint failed: Tickets.ticket_id")) {
+                          reject(new ItemAlreadyExistsError());
+                        } else {
+                          reject(err);
+                        }
+                        return;
                     }
                     if (!row) {
-                      //TODO: add custom error for counter not found
-                      //reject(new UserNotFoundError())
-                    return
+                      reject(new ItemNotFoundError());
+                      return;
                     }
                     const ticket: Ticket = new Ticket (row.ticket_id,
                                                       row.service_type_id,
@@ -93,6 +92,7 @@ public getAllTickets(): Promise<Ticket[]> {
                                                       row.called_at,
                                                       row.status);
                     resolve(ticket);
+                    return;
                 })
             } catch (error) {
                 reject(error);
@@ -111,11 +111,11 @@ public getAllTickets(): Promise<Ticket[]> {
                         return
                     }
                       if(this.changes === 0){
-                          // TODO: reject with custom error
-                          //reject(new UserNotFoundError())
-                          return
+                          reject(new ItemNotFoundError());
+                          return;
                       }
-                      resolve(true)
+                      resolve(true);
+                      return;
                   })
               })
     }
@@ -128,25 +128,26 @@ public getAllTickets(): Promise<Ticket[]> {
         const values: (Status | number | string | null)[] = [];
 
         if (called_at) {
-                const formatted_called_at = formatTimestampForSQL(called_at);
+                const formatted_called_at = dayjs(called_at).toISOString();
                 updates.push(" called_at = ?");
                 values.push(formatted_called_at);
-            }
-            if (status) {
-                updates.push(" status = ?");
+        } 
+        if (status) {
+               updates.push(" status = ?");
                 values.push(status);
-            }
-            if (queue_position !== undefined) {
+        }
+        if (queue_position !== undefined) {
                 updates.push(" queue_position = ?");
                 values.push(queue_position);
-            }
+        }
 
-            if (updates.length === 0) {
-                return reject(new Error("At least one field (called_at, status, queue_position) must be updated."));
-            }
+        if (updates.length === 0) {
+              reject(new InvalidInputError());
+              return;
+        }
 
-            sqlUpdate += updates.join(", ") + " WHERE ticket_id = ?";
-            values.push(ticket_id); // Add ticket_id to the parameters
+        sqlUpdate += updates.join(", ") + " WHERE ticket_id = ?";
+        values.push(ticket_id); // Add ticket_id to the parameters
 
         db.run(sqlUpdate, values, (err: Error | null) => {
             if (err) {
@@ -160,14 +161,15 @@ public getAllTickets(): Promise<Ticket[]> {
                     return;
                 }   
                 if(!row){
-                    //TODO: add custom error
-                    //reject(new UserNotFoundError())
+                    reject(new ItemNotFoundError())
                     return;
                 }
-                const ticket: Ticket = new Ticket(row.ticket_id, row.service_type_id, row.queue_position, row.issued_at, row.called_at, row.status);
+                const ticket: Ticket = new Ticket(row.ticket_id, row.service_type_id, row.queue_position, dayjs(row.issued_at).toDate(),
+                                                  row.called_at ? dayjs(row.called_at).toDate() : null,
+                                                  row.status);
                 resolve(ticket);
-            })
-        })
+            });
+        });
      })
     }
 }

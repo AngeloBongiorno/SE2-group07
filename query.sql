@@ -30,7 +30,7 @@ CREATE TABLE Tickets (
     queue_position INTEGER NOT NULL,
     issued_at TEXT DEFAULT CURRENT_TIMESTAMP,
     called_at TEXT NULL, -- Will be filled when the ticket is called
-    status ENUM('waiting', 'called', 'served') DEFAULT 'waiting',
+    status TEXT CHECK(status IN ('waiting', 'called', 'served')) DEFAULT 'waiting',
     FOREIGN KEY (service_type_id) REFERENCES ServiceTypes(service_type_id) ON DELETE CASCADE
 );
 
