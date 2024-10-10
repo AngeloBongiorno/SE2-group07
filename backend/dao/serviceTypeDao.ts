@@ -67,7 +67,7 @@ public getAllServiceTypes(): Promise<ServiceType[]> {
                     if (!row) {
                       //TODO: add custom error for counter not found
                       reject(new ItemNotFoundError())
-                    return
+                    return;
                     }
                     const serviceType: ServiceType = new ServiceType(row.service_type_id, row.name, row.avg_service_time);
                     resolve(serviceType);

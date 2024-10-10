@@ -16,8 +16,10 @@ class CounterDAO {
                     if (err) {
                         if (err.message.includes("UNIQUE constraint failed: Counter.counter_id")) reject(new ItemAlreadyExistsError);
                         reject(err);
+                        return;
                     }
                     resolve(true);
+                    return;
                 })
             } catch (error) {
                 reject(error);
@@ -33,12 +35,15 @@ public getAllCounters(): Promise<Counter[]> {
                 db.all(sql, [], (err: Error | null, rows: any[]) => {
                     if (err) {
                         reject(err);
+                        return;
                     }
                     const counters: Counter[] = rows.map(row => new Counter(row.counter_id, row.name));
                     resolve(counters);
+                    return;
                 })
             } catch (error) {
                 reject(error);
+                return;
             }
 
         })
@@ -78,11 +83,11 @@ public getAllCounters(): Promise<Counter[]> {
                 db.run(sql, [counter_id], function(err: Error | null){
                     if(err){
                         reject(err)
-                        return
+                        return;
                     }
                       if(this.changes === 0){
                           reject(new ItemNotFoundError())
-                          return
+                          return;
                       }
                       resolve(true)
                   })

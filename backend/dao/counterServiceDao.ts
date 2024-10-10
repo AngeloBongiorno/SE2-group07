@@ -16,8 +16,10 @@ class CounterServiceDAO {
                     if (err) {
                         if (err.message.includes("UNIQUE constraint failed: CounterService.counter_service_id")) reject(new ItemAlreadyExistsError());
                         reject(err);
+                        return;
                     }
                     resolve(true);
+                    return;
                 })
             } catch (error) {
                 reject(error);
@@ -33,9 +35,11 @@ public getAllCounterServices(): Promise<CounterService[]> {
                 db.all(sql, [], (err: Error | null, rows: any[]) => {
                     if (err) {
                         reject(err);
+                        return;
                     }
                     const counters: CounterService[] = rows.map(row => new CounterService(row.counter_service_id, row.counter_id, row.service_type_id));
                     resolve(counters);
+                    return;
                 })
             } catch (error) {
                 reject(error);
@@ -63,6 +67,7 @@ public getAllCounterServices(): Promise<CounterService[]> {
                     }
                     const counter: CounterService = new CounterService(row.counter_service_id, row.counter_id, row.service_type_id);
                     resolve(counter);
+                    return;
                 })
             } catch (error) {
                 reject(error);
