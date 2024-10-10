@@ -1,5 +1,5 @@
-CREATE DATABASE office_queue_management;
-USE office_queue_management;
+-- CREATE DATABASE office_queue_management;
+-- USE office_queue_management;
 
 -- Create the Counters table
 CREATE TABLE Counters (
@@ -25,12 +25,21 @@ CREATE TABLE CounterServices (
 
 -- Create the Tickets table to store ticket information
 CREATE TABLE Tickets (
+<<<<<<< HEAD:query.sql
     ticket_id INTEGER PRIMARY KEY AUTOINCREMENT,
     service_type_id INTEGER NOT NULL,
     queue_position INTEGER NOT NULL,
     issued_at TEXT DEFAULT CURRENT_TIMESTAMP,
     called_at TEXT NULL, -- Will be filled when the ticket is called
     status TEXT CHECK(status IN ('waiting', 'called', 'served')) DEFAULT 'waiting',
+=======
+    ticket_id INT AUTO_INCREMENT PRIMARY KEY,
+    service_type_id INT NOT NULL,
+    queue_position INT NOT NULL,
+    issued_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    called_at TIMESTAMP NULL, -- Will be filled when the ticket is called
+    status INT DEFAULT 0,
+>>>>>>> Sprint-1:backend/db_design/query.sql
     FOREIGN KEY (service_type_id) REFERENCES ServiceTypes(service_type_id) ON DELETE CASCADE
 );
 
