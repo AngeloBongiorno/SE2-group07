@@ -1,4 +1,4 @@
-import db from "../db"
+import db from "../db/db"
 import { Counter } from "../models/Counter"
 import { InvalidInputError, ItemAlreadyExistsError, ItemNotFoundError } from "./errors";
 
