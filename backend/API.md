@@ -36,3 +36,112 @@ xxxxx
 - Access Constraints: None
 - Additional Constraints:
   - xxx
+
+
+### Get Ticket
+
+### Get Available Services
+
+#### GET `/services`
+
+Fetches a list of available services that customers can choose from.
+
+- Request Parameters: None
+- Request Body Content: None
+- Response Body Content: An array of `Service` objects
+  - Example: 
+    ```json
+    [
+      {
+        "service_id": 1,
+        "service_name": "Shipping",
+        "avg_service_time": 10
+      },
+      {
+        "service_id": 2,
+        "service_name": "Accounts Management",
+        "avg_service_time": 7
+      }
+    ]
+    ```
+- Access Constraints: None
+- Additional Constraints: None
+
+### Get Ticket
+
+#### POST `/ticket`
+
+Generates a unique ticket for a customer based on the selected service type.
+
+- Request Parameters: None
+- Request Body Content:
+  - `service_id`: The ID of the selected service type.
+  - Example:
+    ```json
+    {
+      "service_id": 1
+    }
+    ```
+- Response Body Content: A `Ticket` object containing the unique ticket code and queue position.
+  - Example:
+    ```json
+    {
+      "ticket_code": "A001",
+      "service_id": 1,
+      "queue_position": 5
+    }
+    ```
+- Access Constraints: None
+- Additional Constraints: None
+
+### Get Queue Status
+
+#### GET `/queue/status`
+
+Returns the status of all service queues, including the number of people waiting for each service.
+
+- Request Parameters: None
+- Request Body Content: None
+- Response Body Content: A list of `QueueStatus` objects
+  - Example:
+    ```json
+    {
+      "queues": [
+        {
+          "service_id": 1,
+          "queue_length": 4
+        },
+        {
+          "service_id": 2,
+          "queue_length": 2
+        }
+      ]
+    }
+    ```
+- Access Constraints: None
+- Additional Constraints: None
+
+### Estimate Waiting Time
+
+#### GET `/queue/estimate-time`
+
+Estimates the waiting time for a given ticket based on the current queue conditions.
+
+- Request Parameters: None
+- Request Body Content:
+  - `ticket_code`: The code of the ticket for which the waiting time is estimated.
+  - Example:
+    ```json
+    {
+      "ticket_code": "A001"
+    }
+    ```
+- Response Body Content: A `WaitingTime` object
+  - Example:
+    ```json
+    {
+      "estimated_wait_time": "15:50"
+    }
+    ```
+- Access Constraints: None
+- Additional Constraints: None
