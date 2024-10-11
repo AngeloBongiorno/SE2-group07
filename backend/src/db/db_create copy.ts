@@ -41,14 +41,15 @@ function dbCreate() {
                     console.log('SQL script executed successfully.');
                 }
             });
-        });
-        
-        db.close((err) => {
-            if (err) {
-                console.error('Error while closing the database:', err.message);
-            }
+
+            db.close((err) => {
+                if (err) {
+                    console.error('Error while closing the database:', err.message);
+                }
+            });
         });
     });
+
 
 }
 
