@@ -121,7 +121,7 @@ Returns the status of all service queues, including the number of people waiting
 - Access Constraints: None
 - Additional Constraints: None
 
-### Estimate Waiting Time
+<!-- ### Estimate Waiting Time
 
 #### GET `/queue/estimate-time`
 
@@ -143,5 +143,5 @@ Estimates the waiting time for a given ticket based on the current queue conditi
       "estimated_wait_time": "15:50"
     }
     ```
-- Access Constraints: None
-- Additional Constraints: None
+- Access Constraints: None -->
+<!-- - Additional Constraints: None -->
