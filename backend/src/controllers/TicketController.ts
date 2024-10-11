@@ -15,7 +15,6 @@ class TicketController {
     public async getTicket(req: Request, res: Response): Promise<void> {
         const { service_type_id } = req.body;
 
-        // Input validation
         if (!service_type_id) {
             res.status(400).json({ error: 'Invalid input: service_type_id is required.' });
             return;
@@ -71,7 +70,7 @@ class TicketController {
         try {
             const allTickets = await this.ticketDAO.getAllTickets();
 
-            // Create queue status for each service type
+            
             const queueStatus = allTickets.reduce((acc: any, ticket) => {
                 if (!acc[ticket.service_type_id]) {
                     acc[ticket.service_type_id] = 0;
@@ -105,32 +104,6 @@ class TicketController {
             res.status(500).json({ error: 'Internal server error.' });
         }
     }
-
-    // GET /queue/estimate-time/:ticket_id
-    // public async estimateWaitingTime(req: Request, res: Response): Promise<void> {
-    //     const { ticket_id } = req.params;
-
-    //     try {
-    //         const ticket = await this.ticketDAO.getTicket(Number(ticket_id));
-
-    //         if (!ticket) {
-    //             res.status(404).json({ error: 'Ticket not found.' });
-    //             return;
-    //         }
-
-    //         // Fetch all tickets of the same service type to calculate wait time
-    //         const allTickets = await this.ticketDAO.getAllTickets();
-    //         const queueLength = allTickets.filter(t => t.service_type_id === ticket.service_type_id).length;
-    //         const serviceTime = 5; // Assuming average service time is 5 minutes
-
-    //         // Calculate estimated waiting time
-    //         const estimatedWaitTime = serviceTime * ((queueLength / 1.5) + 0.5);
-
-    //         res.status(200).json({ estimated_wait_time: estimatedWaitTime.toFixed(2) });
-    //     } catch (error) {
-    //         res.status(500).json({ error: 'Internal server error.' });
-    //     }
-    // }
 
     // PUT /ticket/:ticket_id
     public async updateTicket(req: Request, res: Response): Promise<void> {
