@@ -19,10 +19,6 @@ router.get('/queue/status', TicketController.getQueueStatus);
 // GET /queue/:service_id
 router.get('/queue/:service_id', TicketController.getQueueByService);
 
-// // Route to estimate waiting time for a ticket
-// // GET /queue/estimate-time/:ticket_id
-// router.get('/queue/estimate-time/:ticket_id', TicketController.estimateWaitingTime);
-
 // Route to update a ticket
 // PUT /ticket/:ticket_id
 router.put('/ticket/:ticket_id', TicketController.updateTicket);
