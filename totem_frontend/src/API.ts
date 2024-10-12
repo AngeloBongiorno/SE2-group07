@@ -13,6 +13,19 @@ const postTicket = async (service_type_id: number) => {
         })
 }
 
+const getServices = async () => {
+    const requestUrl = `http://localhost:3001/services`;
 
-const API = { postTicket };
+    return await fetch(requestUrl)
+        .then(response => response.json())
+        .catch((error) => {
+          console.error("Error fetching services:", error)
+        }
+        );
+}
+
+
+
+
+const API = { postTicket, getServices };
 export default API;
