@@ -2,6 +2,7 @@ import qrcode from 'qrcode';
 import { Ticket } from './src/models/Ticket';
 import PDFDocument from 'pdfkit';
 import fs from 'fs';
+import * as path from 'path';
 
 async function generateTicketPDF(ticket: Ticket): Promise<string> {
     const doc = new PDFDocument();
@@ -13,34 +14,58 @@ async function generateTicketPDF(ticket: Ticket): Promise<string> {
     // Add ticket details
     doc.fontSize(20).text(`Ticket ID: ${ticket.ticket_id}`, 100, 100);
     doc.fontSize(16).text(`Type of service: ${ticket.service_type_id}`, 100, 150);
-    doc.fontSize(16).text(`Issued at: ${ticket.issued_at}`, 100, 180);
+    doc.fontSize(16).text(`Issued at: ${ticket.issued_at.getMonth()}/${ticket.issued_at.getDate()} - ${ticket.issued_at.getHours()}:${ticket.issued_at.getMinutes()}`, 100, 180);
 
-    // Generate QR code that links to your backend's download endpoint
-    //const qrCodeData = await qrcode.toDataURL(`https://your-backend.com/download/${ticket.ticket_id}`);
-    
     // Add QR code image to the PDF
-    /*
-    doc.image(qrCodeData, {
+    const qr = await generateQrCode(ticket);
+    doc.image(qr, {
         fit: [100, 100],
         align: 'center',
         valign: 'center',
     });
-    */
-    // Finalize PDF file
     doc.end();
 
     return pdfPath;
 }
 
 /*
- *
- * backend should generate a pdf containing ticket info and associated link
- * link should be embedded in qrcode
+ * Generates base64 representation of qr code 
+ * It embeds link to retrieve the ticket
  */
 
 async function generateQrCode(ticket: Ticket): Promise<string> {
-    const qr = await qrcode.toDataURL(`http://127.0.0.1:3001/tickets/${ticket.ticket_id}`);
+    const qr = await qrcode.toDataURL(`http://127.0.0.1:3001/ticketPdfs/${ticket.ticket_id}.pdf`);
     return qr;
 }
 
-export {generateTicketPDF, generateQrCode};
+/**
+ * Deletes all the ticket PDF files.
+ */
+function deleteTicketPdfs(): void {
+    // Read the contents of the folder
+    fs.readdir("./tickets/", (err, files) => {
+        if (err) {
+            console.error(`Error reading folder: ${err.message}`);
+            return;
+        }
+
+        // Loop through each file in the folder
+        files.forEach((file) => {
+            const filePath = path.join("./tickets/", file);
+            
+            // Check if the file has a .pdf extension
+            if (path.extname(file).toLowerCase() === '.pdf') {
+                // Delete the file
+                fs.unlink(filePath, (err) => {
+                    if (err) {
+                        console.error(`Error deleting file ${file}: ${err.message}`);
+                    } else {
+                        console.log(`Deleted PDF file: ${file}`);
+                    }
+                });
+            }
+        });
+    });
+}
+
+export {generateTicketPDF, generateQrCode, deleteTicketPdfs};

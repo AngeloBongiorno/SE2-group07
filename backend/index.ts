@@ -18,24 +18,17 @@ const corsOptions = {
 // cors middleware
 app.use(cors(corsOptions));
 
-// Create or open an SQLite database
-/*
-const db = new sqlite3.Database(`${db_path}db.db`, (err) => {
-  if (err) {
-    console.error('Error opening database', err);
-  } else {
-    console.log('Connected to SQLite database');
-  }
-});
-*/
+// Allows access to ticket pdfs
+app.use('/ticketPdfs', express.static("./ticketPdfs"));
 
 // Basic route
 app.get('/', (_req, res) => {
   res.send('Hello from the backend!');
 });
 
+// test route for generationg a dummy ticket in the tickets folder, sends back the qr embedding the link to the ticket
 app.get('/dummyTicket', async (_req, res) => {
-  let ticket: Ticket = new Ticket(800, 200, 5, new Date(), null, Status.WAITING);
+  let ticket: Ticket = new Ticket(420, 9999, 5, new Date(), null, Status.WAITING);
   generateTicketPDF(ticket);
   let qr = await generateQrCode(ticket);
   res.json({qr})

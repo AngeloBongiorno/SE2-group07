@@ -7,6 +7,19 @@ Specific error scenarios will have their corresponding error code.
 
 CORS methods to use: GET, DELETE, POST (for adding new things -- NOT idempotent), PUT (for updating things -- idempotent)
 
+### STATIC API
+
+#### GET `/ticketPdfs/ticketId.pdf`
+
+Static route needed for customers to download their ticket in pdf format.
+
+- Request Parameters: A ticket id in form of `ticketId.pdf`
+- Request Body Content: None
+- Response Body Content: `application/pdf`
+- Access Constraints: None
+- Additional Constraints:
+  - Returns a 404 if no Ticket pdf is available
+
 ### Call Customer API
 
 #### GET `callCustomer`
