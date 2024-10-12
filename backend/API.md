@@ -108,13 +108,14 @@ Generates a unique ticket for a customer based on the selected service type.
       "service_id": 1
     }
     ```
-- Response Body Content: A `Ticket` object containing the unique ticket code and queue position.
+- Response Body Content: A `Ticket` object containing the unique ticket code, queue position and qr code in base64.
   - Example:
     ```json
     {
       "ticket_code": "A001",
       "service_id": 1,
-      "queue_position": 5
+      "queue_position": 5,
+      "qr": base64 string,
     }
     ```
 - Access Constraints: None
