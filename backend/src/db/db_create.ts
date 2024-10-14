@@ -8,48 +8,24 @@ function dbCreate() {
     const sqlScript = fs.readFileSync(sqlFilePath, 'utf8');
 
     db.serialize(() => {
-        db.run("BEGIN TRANSACTION", (err) => {
-            if (err) {
-                console.error('Error starting transaction:', err.message);
-                return;
-            }
-
-            const queries = sqlScript.split(';').filter(query => query.trim());
-            for (const query of queries) {
-                db.run(query, (err) => {
-                    if (err) {
-                        console.error('Error executing query:', err.message);
-                        db.run("ROLLBACK", (rollbackErr) => {
-                            if (rollbackErr) {
-                                console.error('Error rolling back transaction:', rollbackErr.message);
-                            }
-                        });
-                        return;
-                    }
-                });
-            }
-
-            db.run("COMMIT", (err) => {
+        const queries = sqlScript.split(';').filter(query => query.trim());
+        for (const query of queries) {
+            db.run(query, (err) => {
                 if (err) {
-                    console.error('Error committing transaction:', err.message);
-                    db.run("ROLLBACK", (rollbackErr) => {
-                        if (rollbackErr) {
-                            console.error('Error rolling back transaction:', rollbackErr.message);
-                        }
-                    });
-                } else {
-                    console.log('SQL script executed successfully.');
+                    const firstLineOfQuery = query.trim().split('\n')[0];
+                    console.error('Error executing query:', firstLineOfQuery);
+                    console.error('Error is:', err.message, '\n');
                 }
             });
-        });
-        
+        }
+        console.log('SQL script executed successfully.');
+
         db.close((err) => {
             if (err) {
                 console.error('Error while closing the database:', err.message);
             }
         });
     });
-
 }
 
 dbCreate();

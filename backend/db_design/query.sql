@@ -41,3 +41,14 @@ CREATE TABLE DailyQueueStats (
     FOREIGN KEY (counter_id) REFERENCES Counters(counter_id) ON DELETE CASCADE,
     FOREIGN KEY (service_type_id) REFERENCES ServiceTypes(service_type_id) ON DELETE CASCADE
 );
+
+-- Create the TicketsToShow table to display ticket information
+CREATE TABLE TicketsToShow (
+    ticket_id INTEGER PRIMARY KEY,
+    service_type_id INTEGER NOT NULL,
+    counter_id INTEGER NOT NULL,
+    called_at TEXT NOT NULL, -- Time the ticket was called for service
+    FOREIGN KEY (ticket_id) REFERENCES Tickets(ticket_id) ON DELETE CASCADE,
+    FOREIGN KEY (service_type_id) REFERENCES ServiceTypes(service_type_id) ON DELETE CASCADE,
+    FOREIGN KEY (counter_id) REFERENCES Counters(counter_id) ON DELETE CASCADE
+);  

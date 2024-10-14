@@ -35,7 +35,15 @@ stat_id (INT, Primary Key, Auto Increment): Stat record ID.
 counter_id (Foreign Key -> Counters.counter_id): Counter ID.
 service_type_id (Foreign Key -> ServiceTypes.service_type_id): Service type ID.
 date (DATE): Date of the statistic.
-served_count (INT): Number of customers served by the counter for the service type on that day.
+served_count (INT): Number of customers served by the counter for the service type on that day.  
+
+
+**TicketsToShow**  
+ticket_id (INT, Primary Key, Foreign Key -> Tickets.ticket_id): Unique ticket number.
+service_type_id (INT, Foreign Key -> ServiceTypes.service_type_id): Type of service requested by the customer.
+counter_id (INT, Foreign Key -> Counters.counterId): Counter number.
+called_at (TIMESTAMP): Time the ticket was called for service.
+
 
 
 ***Logic***
@@ -56,10 +64,11 @@ This data is stored in the DailyQueueStats table and can be used for reports and
 
 **Explanation of Tables:**
 
-**--** 
-Counters: Stores the counters available in the office (e.g., Counter 1, Counter 2).
-ServiceTypes: Stores the different types of services (e.g., Deposit, Shipping) and their average service time.
-CounterServices: Links the counters to the service types they can handle.
-Tickets: Tracks the tickets issued to customers, including queue position and status.
-DailyQueueStats: Tracks the statistics for served tickets, organized by date, counter, and service type.
+**--**  
+Counters: Stores the counters available in the office (e.g., Counter 1, Counter 2).  
+ServiceTypes: Stores the different types of services (e.g., Deposit, Shipping) and their average service time.  
+CounterServices: Links the counters to the service types they can handle.  
+Tickets: Tracks the tickets issued to customers, including queue position and status.  
+DailyQueueStats: Tracks the statistics for served tickets, organized by date, counter, and service type.  
+TicketsToShow: Contains tickets that have just been changed from `waiting` state to `called`. Each ticket is removed from this table as soon as the waiting area display succeeds in showing the needed information.  
 **--**

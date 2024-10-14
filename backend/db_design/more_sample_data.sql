@@ -1,5 +1,3 @@
-
-
 -- Try format error
 INSERT INTO ServiceTypes (name, avg_service_time) 
 VALUES 
