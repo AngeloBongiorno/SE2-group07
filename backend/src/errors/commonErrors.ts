@@ -1,5 +1,6 @@
 const GENERIC_ERROR = "An error occurred";
 const WRONG_FORMAT = "Wrong format";
+const INVALID_FUNCTION_PARAMETER = "Invalid function parameter";
 
 /**
  * Represents a generic error.
@@ -26,4 +27,15 @@ class WrongFormatError extends Error {
     }
 }
 
-export { GenericError, WrongFormatError };
+class InvalidFunctionParameterError extends Error {
+    customMessage: string;
+    customCode: number;
+
+    constructor() {
+        super();
+        this.customMessage = INVALID_FUNCTION_PARAMETER;
+        this.customCode = 400;
+    }
+}
+
+export { GenericError, WrongFormatError, InvalidFunctionParameterError };

@@ -4,7 +4,8 @@ import * as path from 'path';
 import db from './db';
 
 function dbCreate() {
-    const sqlFilePath = path.join(__dirname, '..', '..', 'db_design', 'query.sql');
+    const sqlFilePath = path.join(__dirname, '..', '..', 'db_design', 'sample_data.sql');
+    // const sqlFilePath = path.join(__dirname, '..', '..', 'db_design', 'more_sample_data.sql');
     const sqlScript = fs.readFileSync(sqlFilePath, 'utf8');
 
     db.serialize(() => {
@@ -12,8 +13,7 @@ function dbCreate() {
         for (const query of queries) {
             db.run(query, (err) => {
                 if (err) {
-                    const firstLineOfQuery = query.trim().split('\n')[0];
-                    console.error('Error executing query:', firstLineOfQuery);
+                    console.error('Error executing query:', query);
                     console.error('Error is:', err.message, '\n');
                 }
             });
