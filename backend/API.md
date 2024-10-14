@@ -7,6 +7,19 @@ Specific error scenarios will have their corresponding error code.
 
 CORS methods to use: GET, DELETE, POST (for adding new things -- NOT idempotent), PUT (for updating things -- idempotent)
 
+### STATIC API
+
+#### GET `/ticketPdfs/ticketId.pdf`
+
+Static route needed for customers to download their ticket in pdf format.
+
+- Request Parameters: A ticket id in form of `ticketId.pdf`
+- Request Body Content: None
+- Response Body Content: `application/pdf`
+- Access Constraints: None
+- Additional Constraints:
+  - Returns a 404 if no Ticket pdf is available
+
 ### Call Customer API
 
 #### GET `callCustomer`
@@ -108,13 +121,14 @@ Generates a unique ticket for a customer based on the selected service type.
       "service_id": 1
     }
     ```
-- Response Body Content: A `Ticket` object containing the unique ticket code and queue position.
+- Response Body Content: A `Ticket` object containing the unique ticket code, queue position and qr code in base64.
   - Example:
     ```json
     {
       "ticket_code": "A001",
       "service_id": 1,
-      "queue_position": 5
+      "queue_position": 5,
+      "qr": base64 string,
     }
     ```
 - Access Constraints: None
@@ -171,3 +185,24 @@ Estimates the waiting time for a given ticket based on the current queue conditi
     ```
 - Access Constraints: None
 - Additional Constraints: None
+
+### Next Customer API
+
+#### GET `nextCustomer`
+
+ API to find the next customer that has to be served and it sets the ticket as called.
+
+- Request Parameters: None
+- Request Body Content: None
+- Response Body Content: the next that is going to be served
+  - Example: `{
+    "ticket_id": 4,
+    "service_type_id": 1,
+    "queue_position": 1,
+    "issued_at": "2024-10-14 15:45:45",
+    "called_at": "2024-10-14 15:46:39",
+    "status": "called"
+}`
+- Access Constraints: None
+- Additional Constraints:
+  - 
