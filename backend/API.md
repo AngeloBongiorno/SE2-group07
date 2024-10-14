@@ -193,7 +193,11 @@ Estimates the waiting time for a given ticket based on the current queue conditi
  API to find the next customer that has to be served and it sets the ticket as called.
 
 - Request Parameters: None
-- Request Body Content: None
+- Request Body Content: 
+  Example:
+{
+  "counter_id" : "1"
+}
 - Response Body Content: the next that is going to be served
   - Example: `{
     "ticket_id": 4,

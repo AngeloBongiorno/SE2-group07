@@ -90,6 +90,10 @@ class TicketDAO {
                         reject(err);
                         return;
                     }
+                    if (!row) {
+                        reject(new ItemNotFoundError());
+                        return;
+                      }
                     resolve(row.ticket_id);
                     return;
                 })
