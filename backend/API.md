@@ -19,7 +19,7 @@ Fetches an array of TicketToShow objects, so that the waiting display can show w
   - Example: `[{ticketId: 343, serviceType: 1, counterId: 4, called_at: "10:09:27"}, {...}]`
 - Access Constraints: None
 - Additional Constraints:
-  - Returns a 404 if no new TicketToShow is available (i.e. the ticketToShow table is empty)
+  - Returns a `404 NoNewTicketError` if no new TicketToShow is available (i.e. the ticketToShow table is empty)
 
 #### DELETE `callCustomer`
 Removes the successfully displayed customers from the corresponding table in the database (ticketToShow table), so that they are not displayed again by error.
@@ -30,7 +30,20 @@ Removes the successfully displayed customers from the corresponding table in the
 - Response Body Content: None
 - Access Constraints: None
 - Additional Constraints:
-  - Returns a 404 if no ticketId was matched, i.e. either the ticket was never in the table or it has already been removed
+  - Returns a `404 TicketNotFoundError` if no ticketId was matched, i.e. either the ticket was never in the table or it has already been removed
+
+#### POST `callCustomer`
+
+Inserts a ticket in the TicketsToShow table. To use when the officer calls the next customer, i.e. sets his status to called.
+
+- Request Parameters: None
+- Request Body Content: A `TicketToShow` object
+  - Example: `{ticketId: 343, serviceType: 1, counterId: 4, called_at: "10:09:27"}`
+- Access Constraints: None
+- Additional Constraints:
+  - Returns a `409 TicketAlreadyExistsError` if the ticket was already inserted in the table
+  - Returns a `400 ForeignKeyConstraintError` if there is a foreign key constraint violation (i.e., the referenced foreign key does not exist)
+
 
 #### Example of a request with parameters -- (don't delete until finalization pls)
 xxxxx
