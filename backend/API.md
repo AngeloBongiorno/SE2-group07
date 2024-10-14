@@ -188,7 +188,7 @@ Estimates the waiting time for a given ticket based on the current queue conditi
 
 ### Next Customer API
 
-#### GET `nextCustomer`
+#### POST `nextCustomer`
 
  API to find the next customer that has to be served and it sets the ticket as called.
 
