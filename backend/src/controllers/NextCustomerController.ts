@@ -19,9 +19,8 @@ class NextCustomerController {
         this.ticketDAO = new TicketDAO;
     }
 
-    public async NextCustomer(): Promise<Ticket>{
-        //come prendo il counter_id
-        const counter_id = "1";
+    public async NextCustomer(counter_id: string): Promise<Ticket>{
+        console.log(counter_id);
         const services:ServiceType[] = await this.counterServiceDAO.getServices(counter_id);
         console.log(services);
         let lengths = [];

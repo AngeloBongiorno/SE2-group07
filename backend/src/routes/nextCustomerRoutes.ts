@@ -35,10 +35,10 @@ class NextCustomerRoutes {
         /**
          * Route for getting the TicketToShow objects from the tickets not yet shown.
          */
-        this.router.get(
+        this.router.post(
             '/nextCustomer',
             (req: any, res: any, next: any) => {
-                this.controller.NextCustomer()
+                this.controller.NextCustomer(req.body.counter_id)
                 .then((ticket:Ticket) => res.status(200).json(ticket))
                 .catch((err) => next(err))
             } 
