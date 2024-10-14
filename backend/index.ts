@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import initRoutes from './src/routes';
 //import sqlite3 from 'sqlite3';
 //const db_path = './';
 const app = express();
@@ -23,10 +24,18 @@ const db = new sqlite3.Database(`${db_path}db.db`, (err) => {
 });
 */
 
+
+
 // Basic route
 app.get('/', (_req, res) => {
   res.send('Hello from the backend!');
 });
+
+/*app.get('/officequeue/nextCustomer', (req, res) => {
+  res.send('Test route /officequeue/nextCustomer works!');
+});*/
+
+initRoutes(app);
 
 app.listen(port, () => {
   console.log(`Backend listening on port ${port}`);
