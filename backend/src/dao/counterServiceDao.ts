@@ -1,5 +1,6 @@
-import db from "../db"
+import db from "../db/db"
 import { CounterService } from "../models/CounterService";
+import { ServiceType } from "../models/ServiceType";
 import { InvalidInputError, ItemAlreadyExistsError, ItemNotFoundError } from "./errors";
 
 
@@ -48,6 +49,30 @@ public getAllCounterServices(): Promise<CounterService[]> {
         })
     }
 
+    public getServices(counter_id: string) :Promise<ServiceType[]> {
+        return new Promise<ServiceType[]>((resolve, reject) => {
+            try{
+                const sql = "SELECT * FROM ServiceTypes s JOIN CounterServices cs ON s.service_type_id = cs.service_type_id WHERE counter_id=?";
+                db.all(sql, [counter_id], (err: Error | null, rows: any[]) => {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+                    if (!rows) {
+                      reject(new ItemNotFoundError())
+                    return;
+                    }
+                    const services: ServiceType[] = rows.map(row => new ServiceType(row.service_type_id,row.name,row.avg_service_time));
+                    resolve(services);
+                    return;
+                })
+            }
+            catch(error){
+                reject(error);
+            }
+        })
+    }
+
     public getAllCounterService(counter_service_id: number): Promise<CounterService> {
         return new Promise<CounterService>((resolve, reject) => {
             try {
@@ -75,6 +100,8 @@ public getAllCounterServices(): Promise<CounterService[]> {
 
         })
     }
+
+
 
 
     public deleteCounterService(counter_service_id: number): Promise<Boolean> {

@@ -172,3 +172,24 @@ Estimates the waiting time for a given ticket based on the current queue conditi
     ```
 - Access Constraints: None
 - Additional Constraints: None
+
+### Next Customer API
+
+#### GET `nextCustomer`
+
+ API to find the next customer that has to be served and it sets the ticket as called.
+
+- Request Parameters: None
+- Request Body Content: None
+- Response Body Content: the next that is going to be served
+  - Example: `{
+    "ticket_id": 4,
+    "service_type_id": 1,
+    "queue_position": 1,
+    "issued_at": "2024-10-14 15:45:45",
+    "called_at": "2024-10-14 15:46:39",
+    "status": "called"
+}`
+- Access Constraints: None
+- Additional Constraints:
+  - 
