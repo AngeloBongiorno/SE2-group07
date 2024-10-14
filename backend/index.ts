@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { generateQrCode, generateTicketPDF } from './pdf_qr_generation';
+import initRoutes from './src/routes';
 
 // THESE ARE FOR TESTING ONLY, REMOVE ONCE DONE
 import { Ticket } from './src/models/Ticket';
@@ -17,9 +18,7 @@ const corsOptions = {
 
 // cors middleware
 app.use(cors(corsOptions));
-
-// Allows access to ticket pdfs
-app.use('/ticketPdfs', express.static("./ticketPdfs"));
+initRoutes(app);
 
 // Basic route
 app.get('/', (_req, res) => {

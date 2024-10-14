@@ -15,6 +15,9 @@ function initRoutes(app: express.Application) {
 
     const callCustomerRoutes = new CallCustomerRoutes()
 
+    // static route that allows access to ticket pdfs
+    app.use(`${prefix}/ticketPdfs`, express.static("./ticketPdfs"));
+
     app.use(`${prefix}/callCustomer`, callCustomerRoutes.getRouter())
 
     ErrorHandler.registerErrorHandler(app)
