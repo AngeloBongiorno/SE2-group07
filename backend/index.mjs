@@ -1,7 +1,8 @@
 import express from 'express';
 import cors from 'cors';
-//import sqlite3 from 'sqlite3';
-//const db_path = './';
+import sqlite3 from 'sqlite3';
+
+const db_path = './';
 const app = express();
 const port = 3001;
 const corsOptions = {
@@ -13,7 +14,6 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Create or open an SQLite database
-/*
 const db = new sqlite3.Database(`${db_path}db.db`, (err) => {
   if (err) {
     console.error('Error opening database', err);
@@ -21,10 +21,9 @@ const db = new sqlite3.Database(`${db_path}db.db`, (err) => {
     console.log('Connected to SQLite database');
   }
 });
-*/
 
 // Basic route
-app.get('/', (_req, res) => {
+app.get('/', (req, res) => {
   res.send('Hello from the backend!');
 });
 

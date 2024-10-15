@@ -2,25 +2,15 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "Backend for office queue management",
-  "main": "index.ts",
+  "main": "index.mjs",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node index.ts"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "se2-group07",
   "license": "ISC",
   "dependencies": {
-    "backend": "file:",
     "cors": "^2.8.5",
-    "dayjs": "^1.11.13",
-    "express": "^4.21.1",
+    "express": "^4.21.0",
     "sqlite3": "^5.1.7"
-  },
-  "devDependencies": {
-    "@types/cors": "^2.8.17",
-    "@types/express": "^5.0.0",
-    "@types/node": "^22.7.5",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.6.2"
   }
 }
