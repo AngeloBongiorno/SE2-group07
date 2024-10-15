@@ -125,6 +125,7 @@ Generates a unique ticket for a customer based on the selected service type.
   - Example:
     ```json
     {
+      "message": "ticket created successfully"
       "ticket_code": "A001",
       "service_id": 1,
       "queue_position": 5,

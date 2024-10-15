@@ -209,7 +209,7 @@ class TicketDAO {
         });
     }
 
-    public async createTicket(service_type_id: number, queue_position: number, issued_at: Date | null): Promise<boolean> {
+    public async createTicket(service_type_id: number, queue_position: number, issued_at: Date | null): Promise<Ticket> {
         if (service_type_id < 0 || queue_position < 0) {
             throw new InvalidInputError();
         }
@@ -220,17 +220,41 @@ class TicketDAO {
         const inputs = issued_at === null
             ? [service_type_id, queue_position]
             : [service_type_id, queue_position, dayjs(issued_at).toISOString()];
+        let newTicketId: number;
 
-        return new Promise<boolean>((resolve, reject) => {
-            db.run(sql, inputs, (err: Error | null) => {
+        await new Promise<void>((resolve, reject) => {
+            db.run(sql, inputs, function (err: Error | null) {
                 if (err) {
                     if (err.message.includes("UNIQUE constraint failed: Tickets.ticket_id")) {
                         return reject(new ItemAlreadyExistsError());
                     }
                     return reject(err);
                 }
-                resolve(true);
+                newTicketId = this.lastID;
+                resolve();
             });
+        });
+        const fetchSql = "SELECT * FROM Tickets WHERE ticket_id = ?;";
+        return new Promise<Ticket>((resolve, reject) => {
+         db.get(fetchSql, [newTicketId], (err: Error | null, row: any) => {
+                if (err) {
+                    return reject(err);
+                }
+                if (!row) {
+                    return reject(new ItemNotFoundError());
+                }
+                const newTicket: Ticket = new Ticket(
+                    row.ticket_id,
+                    row.service_type_id,
+                    row.queue_position,
+                    dayjs(row.issued_at).toDate(),
+                    row.called_at ? dayjs(row.called_at).toDate() : null,
+                    row.status
+                );
+
+                resolve(newTicket);
+            });
+
         });
     }
 
