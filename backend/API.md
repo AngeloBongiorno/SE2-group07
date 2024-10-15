@@ -1,15 +1,30 @@
 ## API List
 
-For all success scenarios, always assume a `200` status code for the API response. For requests with wrong format, always assume a `400` error code.
+For all success scenarios, always assume a `200` status code for the API response.  
+For requests with wrong format, use a `400` error code, or better a `WrongFormatError`.  
+For generic errors, use a `500` error code, or better a `GenericError` object.  
 Specific error scenarios will have their corresponding error code.  
 
 CORS methods to use: GET, DELETE, POST (for adding new things -- NOT idempotent), PUT (for updating things -- idempotent)
+
+### STATIC API
+
+#### GET `/ticketPdfs/ticketId.pdf`
+
+Static route needed for customers to download their ticket in pdf format.
+
+- Request Parameters: A ticket id in form of `ticketId.pdf`
+- Request Body Content: None
+- Response Body Content: `application/pdf`
+- Access Constraints: None
+- Additional Constraints:
+  - Returns a 404 if no Ticket pdf is available
 
 ### Call Customer API
 
 #### GET `callCustomer`
 
-Fetches an array of TicketToShow objects, so that the "waiting area display" can update each counter's currently served customer's ID, if one of the TicketToShow fetched is relative to that counter.
+Fetches an array of TicketToShow objects, so that the waiting display can show who the next customer at a counter is.  
 
 - Request Parameters: None
 - Request Body Content: None
@@ -17,14 +32,38 @@ Fetches an array of TicketToShow objects, so that the "waiting area display" can
   - Example: `[{ticketId: 343, serviceType: 1, counterId: 4, called_at: "10:09:27"}, {...}]`
 - Access Constraints: None
 - Additional Constraints:
-  - Returns a 404 if no new TicketToShow is available (i.e. the tickets_to_show table is empty)
-  - Returns a 500 for generic errors
+  - Returns a `404 NoNewTicketError` if no new TicketToShow is available (i.e. the ticketToShow table is empty)
 
-#### Example of a request with parameters --
+#### DELETE `callCustomer`
+Removes the successfully displayed customers from the corresponding table in the database (ticketToShow table), so that they are not displayed again by error.
+
+- Request Parameters: None
+- Request Body Content: An array of `ticketId` integers
+  - Example: `[343, 300, 351]`
+- Response Body Content: None
+- Access Constraints: None
+- Additional Constraints:
+  - Returns a `404 TicketNotFoundError` if no ticketId was matched, i.e. either the ticket was never in the table or it has already been removed
+
+#### POST `callCustomer`
+
+Inserts a ticket in the TicketsToShow table. To use when the officer calls the next customer, i.e. sets his status to called.
+
+- Request Parameters: None
+- Request Body Content: A `TicketToShow` object
+  - Example: `{ticketId: 343, serviceType: 1, counterId: 4, called_at: "10:09:27"}`
+- Access Constraints: None
+- Additional Constraints:
+  - Returns a `409 TicketAlreadyExistsError` if the ticket was already inserted in the table
+  - Returns a `400 ForeignKeyConstraintError` if there is a foreign key constraint violation (i.e., the referenced foreign key does not exist)
+
+
+#### Example of a request with parameters -- (don't delete until finalization pls)
 xxxxx
 
-- Request Parameters: Example: `ezelectronics/users/Admin`
+- Request Parameters:
   - `username`: a string that must not be empty
+  - Example: `ezelectronics/users/Admin`
 - Request Body Content: An object with the following attributes:
   - `name`: a string that must not be empty
   - `surname`: a string that must not be empty
@@ -82,13 +121,14 @@ Generates a unique ticket for a customer based on the selected service type.
       "service_id": 1
     }
     ```
-- Response Body Content: A `Ticket` object containing the unique ticket code and queue position.
+- Response Body Content: A `Ticket` object containing the unique ticket code, queue position and qr code in base64.
   - Example:
     ```json
     {
       "ticket_code": "A001",
       "service_id": 1,
-      "queue_position": 5
+      "queue_position": 5,
+      "qr": base64 string,
     }
     ```
 - Access Constraints: None
