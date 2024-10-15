@@ -1,9 +1,10 @@
-import db from "./db";
+import { asyncdb } from "./db";
 
 export async function cleanup() {
-    await db.run("DELETE FROM CounterServices");
-    await db.run("DELETE FROM Counters");
-    await db.run("DELETE FROM DailyQueueStats");
-    await db.run("DELETE FROM ServiceTypes");
-    await db.run("DELETE FROM Tickets");
+    console.log("clean up");
+    await asyncdb.asyncRun("DELETE FROM CounterServices");
+    await asyncdb.asyncRun("DELETE FROM Counters");
+    await asyncdb.asyncRun("DELETE FROM DailyQueueStats");
+    await asyncdb.asyncRun("DELETE FROM ServiceTypes");
+    await asyncdb.asyncRun("DELETE FROM Tickets");
 }
