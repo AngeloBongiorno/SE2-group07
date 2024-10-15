@@ -161,7 +161,7 @@ Returns the status of all service queues, including the number of people waiting
 - Access Constraints: None
 - Additional Constraints: None
 
-### Estimate Waiting Time
+<!-- ### Estimate Waiting Time
 
 #### GET `/queue/estimate-time`
 
@@ -183,30 +183,5 @@ Estimates the waiting time for a given ticket based on the current queue conditi
       "estimated_wait_time": "15:50"
     }
     ```
-- Access Constraints: None
-- Additional Constraints: None
-
-### Next Customer API
-
-#### POST `nextCustomer`
-
- API to find the next customer that has to be served and it sets the ticket as called.
-
-- Request Parameters: None
-- Request Body Content: 
-  Example:
-{
-  "counter_id" : "1"
-}
-- Response Body Content: the next that is going to be served
-  - Example: `{
-    "ticket_id": 4,
-    "service_type_id": 1,
-    "queue_position": 1,
-    "issued_at": "2024-10-14 15:45:45",
-    "called_at": "2024-10-14 15:46:39",
-    "status": "called"
-}`
-- Access Constraints: None
-- Additional Constraints:
-  - 
+- Access Constraints: None -->
+<!-- - Additional Constraints: None -->
