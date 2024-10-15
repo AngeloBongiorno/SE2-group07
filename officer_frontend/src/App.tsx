@@ -19,7 +19,7 @@ function App() {
       </div>
       <h1>Officer Frontend</h1>
       <div className="card">
-        <button onClick={() => API.nextCustomer("1")}>
+        <button onClick={() => API.nextCustomer(1)}>
           count is {count}
         </button>
         <p>

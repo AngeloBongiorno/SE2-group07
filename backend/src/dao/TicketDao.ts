@@ -1,4 +1,4 @@
-import db from "../db/db"
+import db, { asyncdb } from "../db/db"
 import { Ticket, Status } from "../models/Ticket"
 import { InvalidInputError, ItemAlreadyExistsError, ItemNotFoundError } from "./errors";
 import dayjs from "dayjs";
@@ -63,7 +63,7 @@ class TicketDAO {
         })
     }
 
-    public getQueuesLength(service_type_id: number) :Promise<number> {
+    /*public getQueuesLength(service_type_id: number) :Promise<number> {
         return new Promise<number>((resolve, reject) => {
             try{
                 const sql = "SELECT COUNT(*) as count FROM Tickets WHERE service_type_id=?";
@@ -79,9 +79,16 @@ class TicketDAO {
                 reject(error);
             }
         })
+    }*/
+
+    async getQueuesLength(service_type_id: number) :Promise<number> {
+        const sql = "SELECT COUNT(*) as count FROM Tickets WHERE service_type_id=?";
+        const row = await asyncdb.asyncGet(sql,[service_type_id]);
+        return row.count;
     }
 
-    public getFirstTicket(service_type_id: number): Promise<number> {
+
+    /*public getFirstTicket(service_type_id: number): Promise<number> {
         return new Promise<number>((resolve,reject) => {
             try{
                 const sql = "SELECT ticket_id FROM Tickets WHERE status='waiting' AND service_type_id=? ORDER BY issued_at ASC LIMIT 1";
@@ -102,9 +109,15 @@ class TicketDAO {
                 reject(error);
             }
         })
+    }*/
+
+    async getFirstTicket(service_type_id: number): Promise<number> {
+        const sql = "SELECT ticket_id FROM Tickets WHERE status='waiting' AND service_type_id=? ORDER BY issued_at ASC LIMIT 1";
+        const row = await asyncdb.asyncGet(sql,[service_type_id]);
+        return row.ticket_id;
     }
 
-    public setTicketAsCalled(ticket_id: number): Promise<Ticket> {
+    /*public setTicketAsCalled(ticket_id: number): Promise<Ticket> {
         return new Promise<Ticket>((resolve,reject) => {
             try{
                 const sql = "UPDATE Tickets SET called_at=datetime('now'),status='called' WHERE ticket_id=?";
@@ -124,6 +137,19 @@ class TicketDAO {
                 reject(error);
             }
         })
+    }*/
+
+    async setTicketAsCalled(ticket_id: number): Promise<Ticket> {
+        const sql = "UPDATE Tickets SET called_at=datetime('now'),status='called' WHERE ticket_id=?";
+        await asyncdb.asyncRun(sql,[ticket_id]);
+        const ticket = await this.getTicket2(ticket_id);
+        return ticket;
+    }
+
+    async getTicket2(ticket_id: number): Promise<Ticket> {
+        const sql = "SELECT * FROM Tickets WHERE ticket_id = ?;"
+        const ticket = await asyncdb.asyncGet(sql,[ticket_id]);
+        return ticket
     }
 
     public getTicket(ticket_id: number): Promise<Ticket> {

@@ -1,4 +1,4 @@
-import db from "../db/db"
+import db, { asyncdb } from "../db/db"
 import { CounterService } from "../models/CounterService";
 import { ServiceType } from "../models/ServiceType";
 import { InvalidInputError, ItemAlreadyExistsError, ItemNotFoundError } from "./errors";
@@ -49,7 +49,7 @@ public getAllCounterServices(): Promise<CounterService[]> {
         })
     }
 
-    public getServices(counter_id: string) :Promise<ServiceType[]> {
+    /*public getServices(counter_id: string) :Promise<ServiceType[]> {
         return new Promise<ServiceType[]>((resolve, reject) => {
             try{
                 const sql = "SELECT * FROM ServiceTypes s JOIN CounterServices cs ON s.service_type_id = cs.service_type_id WHERE counter_id=?";
@@ -71,6 +71,22 @@ public getAllCounterServices(): Promise<CounterService[]> {
                 reject(error);
             }
         })
+    }*/
+
+    async getServices(counter_id: string) :Promise<ServiceType[]> {
+        try{
+            const sql = "SELECT * FROM ServiceTypes s JOIN CounterServices cs ON s.service_type_id = cs.service_type_id WHERE counter_id=?";
+            const rows = await asyncdb.asyncAll(sql,[counter_id]);
+            const services: ServiceType[] = rows.map(row => new ServiceType(row.service_type_id,row.name,row.avg_service_time));
+            if (services.length == 0){
+                throw new Error("the counter does not offer any service");
+            }
+            return services;
+        }
+        catch(error){
+            throw error;
+        }
+
     }
 
     public getAllCounterService(counter_service_id: number): Promise<CounterService> {

@@ -22,7 +22,7 @@ class NextCustomerController {
     public async NextCustomer(counter_id: string): Promise<Ticket>{
         console.log(counter_id);
         const services:ServiceType[] = await this.counterServiceDAO.getServices(counter_id);
-        console.log(services);
+        //console.log(services);
         let lengths = [];
         let queues = [];
         for(const service of services){
@@ -34,19 +34,20 @@ class NextCustomerController {
         }
         //console.log(queues);
         //console.log(lengths);
-        const min = Math.min(...lengths);
+        const max = Math.max(...lengths);
         let next_service: ServiceType;
         let queues2:any[] = [];
         for(const i of queues) {
-            if(i.length == min) {
+            if(i.length == max) {
                 queues2.push(i);
             }
         }
         queues2.sort((a:any,b:any)=>a.service.avg_service_time - b.service.avg_service_time);
         //console.log(queues2);
         next_service = queues2[0].service;
+        //console.log(next_service);
         const ticket_id = await this.ticketDAO.getFirstTicket(next_service.service_type_id);
-        console.log(ticket_id);
+        //console.log(ticket_id);
         const ticket:Ticket = await this.ticketDAO.setTicketAsCalled(ticket_id);
         return ticket;
 
