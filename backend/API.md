@@ -32,7 +32,7 @@ Fetches an array of TicketToShow objects, so that the waiting display can show w
   - Example: `[{ticketId: 343, serviceType: 1, counterId: 4, called_at: "10:09:27"}, {...}]`
 - Access Constraints: None
 - Additional Constraints:
-  - Returns a 404 if no new TicketToShow is available (i.e. the ticketToShow table is empty)
+  - Returns a `404 NoNewTicketError` if no new TicketToShow is available (i.e. the ticketToShow table is empty)
 
 #### DELETE `callCustomer`
 Removes the successfully displayed customers from the corresponding table in the database (ticketToShow table), so that they are not displayed again by error.
@@ -43,7 +43,20 @@ Removes the successfully displayed customers from the corresponding table in the
 - Response Body Content: None
 - Access Constraints: None
 - Additional Constraints:
-  - Returns a 404 if no ticketId was matched, i.e. either the ticket was never in the table or it has already been removed
+  - Returns a `404 TicketNotFoundError` if no ticketId was matched, i.e. either the ticket was never in the table or it has already been removed
+
+#### POST `callCustomer`
+
+Inserts a ticket in the TicketsToShow table. To use when the officer calls the next customer, i.e. sets his status to called.
+
+- Request Parameters: None
+- Request Body Content: A `TicketToShow` object
+  - Example: `{ticketId: 343, serviceType: 1, counterId: 4, called_at: "10:09:27"}`
+- Access Constraints: None
+- Additional Constraints:
+  - Returns a `409 TicketAlreadyExistsError` if the ticket was already inserted in the table
+  - Returns a `400 ForeignKeyConstraintError` if there is a foreign key constraint violation (i.e., the referenced foreign key does not exist)
+
 
 #### Example of a request with parameters -- (don't delete until finalization pls)
 xxxxx
@@ -172,3 +185,28 @@ Estimates the waiting time for a given ticket based on the current queue conditi
     ```
 - Access Constraints: None
 - Additional Constraints: None
+
+### Next Customer API
+
+#### POST `nextCustomer`
+
+ API to find the next customer that has to be served and it sets the ticket as called.
+
+- Request Parameters: None
+- Request Body Content: 
+  Example:
+{
+  "counter_id" : "1"
+}
+- Response Body Content: the next that is going to be served
+  - Example: `{
+    "ticket_id": 4,
+    "service_type_id": 1,
+    "queue_position": 1,
+    "issued_at": "2024-10-14 15:45:45",
+    "called_at": "2024-10-14 15:46:39",
+    "status": "called"
+}`
+- Access Constraints: None
+- Additional Constraints:
+  - 

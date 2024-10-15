@@ -1,4 +1,4 @@
-import db from "../db"
+import db from "../db/db"
 import { Ticket, Status } from "../models/Ticket"
 import { InvalidInputError, ItemAlreadyExistsError, ItemNotFoundError } from "./errors";
 import dayjs from "dayjs";
@@ -60,6 +60,69 @@ class TicketDAO {
                 reject(error);
             }
 
+        })
+    }
+
+    public getQueuesLength(service_type_id: number) :Promise<number> {
+        return new Promise<number>((resolve, reject) => {
+            try{
+                const sql = "SELECT COUNT(*) as count FROM Tickets WHERE service_type_id=?";
+                db.get(sql, [service_type_id], (err: Error | null, row: any) => {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+                    resolve(row.count);
+                })
+            }
+            catch(error){
+                reject(error);
+            }
+        })
+    }
+
+    public getFirstTicket(service_type_id: number): Promise<number> {
+        return new Promise<number>((resolve,reject) => {
+            try{
+                const sql = "SELECT ticket_id FROM Tickets WHERE status='waiting' AND service_type_id=? ORDER BY issued_at ASC LIMIT 1";
+                db.get(sql,[service_type_id],(err: Error | null, row: any) => {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+                    if (!row) {
+                        reject(new ItemNotFoundError());
+                        return;
+                      }
+                    resolve(row.ticket_id);
+                    return;
+                })
+            }
+            catch(error){
+                reject(error);
+            }
+        })
+    }
+
+    public setTicketAsCalled(ticket_id: number): Promise<Ticket> {
+        return new Promise<Ticket>((resolve,reject) => {
+            try{
+                const sql = "UPDATE Tickets SET called_at=datetime('now'),status='called' WHERE ticket_id=?";
+                db.run(sql, [ticket_id], function (err: Error | null) {
+                    if (err) {
+                        reject(err); 
+                        return;
+                    }
+                })
+                this.getTicket(ticket_id).then(ticket => {
+                    resolve(ticket); 
+                }).catch(error => {
+                    reject(error); 
+                });
+            }
+            catch(error){
+                reject(error);
+            }
         })
     }
 

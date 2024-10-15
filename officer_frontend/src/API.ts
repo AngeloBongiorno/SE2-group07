@@ -1,12 +1,9 @@
+const requestUrl = `http://localhost:3001/officequeue/nextCustomer`;
 /*
  * Complies to the POST nextCustomer API in API.md
  * returns null and prints an error if something went wrong with request.
  */
-
-
 const nextCustomer = async (counter_id: number): Promise<TicketToShow | null> => {
-    const requestUrl = `http://localhost:3001/officequeue/nextCustomer`;
-
     try {
       const response = await fetch(requestUrl, {
         method: 'POST',
