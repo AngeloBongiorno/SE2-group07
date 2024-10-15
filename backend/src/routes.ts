@@ -20,6 +20,9 @@ function initRoutes(app: express.Application) {
 
 
 
+    // static route that allows access to ticket pdfs
+    app.use(`${prefix}/ticketPdfs`, express.static("./ticketPdfs"));
+
     app.use(`${prefix}/callCustomer`, callCustomerRoutes.getRouter())
     app.use(`${prefix}`, nextCustomerRoutes.getRouter())
 

@@ -1,5 +1,5 @@
 const postTicket = async (service_type_id: number) => {
-    const requestUrl = `http://localhost:3001/ticket`;
+    const requestUrl = `http://localhost:3001/officequeue/ticket`;
     return await fetch(requestUrl, {
       method: 'POST',
       headers: {
@@ -14,7 +14,7 @@ const postTicket = async (service_type_id: number) => {
 }
 
 const getServices = async () => {
-    const requestUrl = `http://localhost:3001/services`;
+    const requestUrl = `http://localhost:3001/officequeue/services`;
 
     return await fetch(requestUrl)
         .then(response => response.json())
