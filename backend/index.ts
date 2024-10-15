@@ -1,15 +1,13 @@
 import express from 'express';
 import cors from 'cors';
 
-import { generateQrCode, generateTicketPDF } from './pdf_qr_generation';
+import { generateQrCode, generateTicketPDF } from './src/pdf_qr_generation';
 import initRoutes from './src/routes';
 
 // THESE ARE FOR TESTING ONLY, REMOVE ONCE DONE
 import { Ticket } from './src/models/Ticket';
 import { Status } from './src/models/Ticket';
 
-
-import initRoutes from './src/routes';
 
 //import sqlite3 from 'sqlite3';
 //const db_path = './';
