@@ -1,31 +1,39 @@
-
-
-
-const URL = "http://localhost:3001/officequeue/"
-
-async function nextCustomer(counter_id: string) {
-    const response = await fetch(URL+'nextCustomer', {
+const requestUrl = `http://localhost:3001/officequeue/nextCustomer`;
+/*
+ * Complies to the POST nextCustomer API in API.md
+ * returns null and prints an error if something went wrong with request.
+ */
+const nextCustomer = async (counter_id: number): Promise<TicketToShow | null> => {
+    try {
+      const response = await fetch(requestUrl, {
         method: 'POST',
         headers: {
-            "Content-Type": "application/json"
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ counter_id: counter_id })
-    })
-    if(response.ok){
-        console.log(response.json())
-    }
-    else {
-        const errDetail = await response.json();
-        if (errDetail.error)
-            throw errDetail.error
-        if (errDetail.message)
-            throw errDetail.message
-        throw new Error("Error. Please reload the page")
+        body: JSON.stringify({ counter_id }),
+      });
+      if (!response.ok) {
+        throw new Error("Network response was not ok: " + response.statusText);
+      }
+      let calledTicket: TicketToShow = await response.json();
+      console.log('fetched this ticket: ', calledTicket);
+      return calledTicket;
+    } catch (error) {
+      console.error('Error fetching the next Customer ticket', error);
+      return null;
     }
 }
 
-const API = {
-    nextCustomer
+interface TicketToShow {
+    ticket_id: number,
+    service_type_id: number,
+    queue_position: number,
+    issued_at: string,
+    called_at: string,
+    status: string
 }
 
-export default API
+
+
+const API = { nextCustomer };
+export default API;
