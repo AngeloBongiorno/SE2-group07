@@ -1,9 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import db from './db';
+import db, { dbRun, dbAll } from './db';
 import { promisify } from 'util';
-
-const dbRun = promisify(db.run.bind(db));
 
 async function dbCreate() {
     const sqlFilePath = path.join(__dirname, '..', '..', 'db_design', 'query.sql');
@@ -12,7 +10,10 @@ async function dbCreate() {
     try {
         // Start transaction
         await dbRun("BEGIN TRANSACTION");
-        console.log('dbCreate transaction started.');
+        if (require.main === module) {
+            console.log('> dbCreate transaction started.');
+        }
+        // console.log('dbCreate started.');
 
         // Execute SQL script
         const queries = sqlScript.split(';').filter(query => query.trim());
@@ -30,27 +31,33 @@ async function dbCreate() {
                 errorOccurred = true;
             }
 
-            console.log(`Query #${queries.indexOf(query) + 1} executed successfully.`);
+            // console.log(`Query #${queries.indexOf(query) + 1} executed successfully.`);
         }
 
         // Commit or rollback transaction
         if (errorOccurred) {
             await dbRun("ROLLBACK");
-            console.error('Database creation rolled back.');
+            if (require.main === module) {
+                console.error('< dbCreate rolled back.');
+            }
             return;
         }
 
         await dbRun("COMMIT");
-        console.log('Database creation committed.');
+        if (require.main === module) {
+            console.log('< dbCreate committed.');
+        }
+        // console.log('dbCreate completed.');
 
-        db.close((err: any) => {
-            if (err) {
-                console.error('Error while closing the database:', err.message);
-            }
-        });
+        // Don't close the database connection here!!!
     } catch (error: any) {
         console.error('Error during database operation:', error.message);
     }
 }
 
-dbCreate();
+// Conditionally call dbCreate() if the module is run directly
+if (require.main === module) {
+    dbCreate();
+}
+
+export { dbCreate };

@@ -3,6 +3,7 @@
 import * as sqlite from 'sqlite3';
 import { Database, RunResult } from 'sqlite3';
 import * as path from 'path';
+import { promisify } from 'util';
 
 export type DBCountType = {
     'COUNT(*)': number
@@ -71,8 +72,12 @@ class AsyncDb {
     }
 }
 
+// adding the same thing as AsyncDb through promisify, as that's what my code used (dragos)
+const dbRun = promisify(db.run.bind(db));
+const dbAll = promisify(db.all.bind(db));
+
 const asyncdb = new AsyncDb(db)
 
 export default db;
 
-export {asyncdb};
+export {asyncdb, dbRun, dbAll};
