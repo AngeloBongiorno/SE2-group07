@@ -194,10 +194,10 @@
 
 
 
-import db from "../db/db";
-import { Ticket, Status } from "../models/Ticket";
-import { InvalidInputError, ItemAlreadyExistsError, ItemNotFoundError } from "./errors";
-import dayjs from "dayjs";
+// import db from "../db/db";
+// import { Ticket, Status } from "../models/Ticket";
+// import { InvalidInputError, ItemAlreadyExistsError, ItemNotFoundError } from "./errors";
+// import dayjs from "dayjs";
 
 //     updateTicket(ticket_id: number, queue_position?: number, called_at?: Date, status?: Status): Promise<Ticket>{
 //       return new Promise<Ticket>((resolve, reject) =>{

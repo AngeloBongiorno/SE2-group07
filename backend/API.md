@@ -2,6 +2,7 @@
 
 For all success scenarios, always assume a `200` status code for the API response.  
 For requests with wrong format, use a `400` error code, or better a `WrongFormatError`.  
+(Actually, you should have used a `422`, as that's what our validator returns)  
 For generic errors, use a `500` error code, or better a `GenericError` object.  
 Specific error scenarios will have their corresponding error code.  
 
