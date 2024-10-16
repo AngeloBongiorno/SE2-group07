@@ -32,6 +32,7 @@ class TicketController {
                 await generateTicketPDF(ticket); 
                 const qr = await generateQrCode(ticket);
                 res.status(200).json({ message: 'Ticket created successfully', ticket_code: ticket.ticket_id, service_id, queue_position: queuePosition, qr });
+
             }
         } catch (error) {
             if (error instanceof InvalidInputError) {
@@ -148,5 +149,6 @@ class TicketController {
         }
     }
 }
+
 
 export default TicketController;

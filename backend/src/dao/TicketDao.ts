@@ -100,6 +100,23 @@
 //         })
 //     }
 
+//     deleteTicket(ticket_id: number): Promise<Boolean> {
+//             return new Promise<Boolean>((resolve, reject) => {
+//                 const sql = "DELETE FROM Tickets WHERE ticket_id=?"
+//                 db.run(sql, [ticket_id], function(err: Error | null){
+//                     if(err){
+//                         reject(err)
+//                         return
+//                     }
+//                       if(this.changes === 0){
+//                           reject(new ItemNotFoundError());
+//                           return;
+//                       }
+//                       resolve(true);
+//                       return;
+//                   })
+//               })
+//     }
 
 //     deleteTicket(ticket_id: number): Promise<Boolean> {
 //             return new Promise<Boolean>((resolve, reject) => {
@@ -119,6 +136,68 @@
 //               })
 //     }
 
+
+//     updateTicket(ticket_id: number, queue_position?: number, called_at?: Date, status?: Status): Promise<Ticket>{
+//       return new Promise<Ticket>((resolve, reject) =>{
+//         let sqlUpdate = "UPDATE Tickets SET";
+//         const updates: string[] = [];
+//         const values: (Status | number | string | null)[] = [];
+
+//         if (called_at) {
+//                 const formatted_called_at = dayjs(called_at).toISOString();
+//                 updates.push(" called_at = ?");
+//                 values.push(formatted_called_at);
+//         } 
+//         if (status) {
+//                updates.push(" status = ?");
+//                 values.push(status);
+//         }
+//         if (queue_position !== undefined) {
+//                 updates.push(" queue_position = ?");
+//                 values.push(queue_position);
+//         }
+
+//         if (updates.length === 0) {
+//               reject(new InvalidInputError());
+//               return;
+//         }
+
+//         sqlUpdate += updates.join(", ") + " WHERE ticket_id = ?";
+//         values.push(ticket_id); // Add ticket_id to the parameters
+
+//         db.run(sqlUpdate, values, (err: Error | null) => {
+//             if (err) {
+//                 reject(err)
+//                 return;
+//             }
+//             const sqlGet = "SELECT * FROM Tickets WHERE ticket_id = ?"
+//             db.get(sqlGet, [ticket_id], (err: Error | null, row: any) => {
+//                 if (err) {
+//                     reject(err)
+//                     return;
+//                 }   
+//                 if(!row){
+//                     reject(new ItemNotFoundError())
+//                     return;
+//                 }
+//                 const ticket: Ticket = new Ticket(row.ticket_id, row.service_type_id, row.queue_position, dayjs(row.issued_at).toDate(),
+//                                                   row.called_at ? dayjs(row.called_at).toDate() : null,
+//                                                   row.status);
+//                 resolve(ticket);
+//             });
+//         });
+//      })
+//     }
+// }
+
+// export default TicketDAO;
+
+
+
+import db from "../db/db";
+import { Ticket, Status } from "../models/Ticket";
+import { InvalidInputError, ItemAlreadyExistsError, ItemNotFoundError } from "./errors";
+import dayjs from "dayjs";
 
 //     updateTicket(ticket_id: number, queue_position?: number, called_at?: Date, status?: Status): Promise<Ticket>{
 //       return new Promise<Ticket>((resolve, reject) =>{
@@ -209,6 +288,7 @@ class TicketDAO {
         });
     }
 
+
     public async createTicket(service_type_id: number, queue_position: number, issued_at: Date | null): Promise<Ticket> {
         if (service_type_id < 0 || queue_position < 0) {
             throw new InvalidInputError();
@@ -230,6 +310,7 @@ class TicketDAO {
                     }
                     return reject(err);
                 }
+
                 newTicketId = this.lastID;
                 resolve();
             });
@@ -257,7 +338,7 @@ class TicketDAO {
 
         });
     }
-
+  
     public async getAllTickets(): Promise<Ticket[]> {
         const sql = "SELECT * FROM Tickets;";
         return new Promise<Ticket[]>((resolve, reject) => {
