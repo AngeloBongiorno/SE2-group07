@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import TicketDAO from '../dao/TicketDao';
-import { Status } from '../models/Ticket';
+import { Status, Ticket } from '../models/Ticket';
+import { generateTicketPDF, generateQrCode } from '../pdf_qr_generation';
 import { InvalidInputError, ItemNotFoundError, ItemAlreadyExistsError } from '../dao/errors';
 
 class TicketController {
@@ -10,12 +11,11 @@ class TicketController {
     constructor() {
         this.ticketDAO = new TicketDAO();
     }
-
     
     public async getTicket(req: Request, res: Response): Promise<void> {
-        const { service_type_id } = req.body;
+        const { service_id } = req.body;
 
-        if (!service_type_id) {
+        if (!service_id) {
             res.status(400).json({ error: 'Invalid input: service_type_id is required.' });
             return;
         }
@@ -23,13 +23,16 @@ class TicketController {
         try {
             // Fetch all tickets to calculate the queue position for the new ticket
             const allTickets = await this.ticketDAO.getAllTickets();
-            const queuePosition = allTickets.filter(ticket => ticket.service_type_id === service_type_id).length + 1;
+            const queuePosition = allTickets.filter(ticket => ticket.service_type_id === service_id).length + 1;
 
             // Create a new ticket
-            const success = await this.ticketDAO.createTicket(service_type_id, queuePosition, new Date());
+            const ticket: Ticket = await this.ticketDAO.createTicket(service_id, queuePosition, new Date());
 
-            if (success) {
-                res.status(200).json({ message: 'Ticket created successfully', service_type_id, queue_position: queuePosition });
+            if (ticket) {
+                await generateTicketPDF(ticket); 
+                const qr = await generateQrCode(ticket);
+                res.status(200).json({ message: 'Ticket created successfully', ticket_code: ticket.ticket_id, service_id, queue_position: queuePosition, qr });
+
             }
         } catch (error) {
             if (error instanceof InvalidInputError) {
@@ -147,4 +150,5 @@ class TicketController {
     }
 }
 
-export default new TicketController();
+
+export default TicketController;

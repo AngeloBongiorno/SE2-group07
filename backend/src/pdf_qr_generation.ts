@@ -1,5 +1,5 @@
 import qrcode from 'qrcode';
-import { Ticket } from './src/models/Ticket';
+import { Ticket } from './models/Ticket'
 import PDFDocument from 'pdfkit';
 import fs from 'fs';
 import * as path from 'path';
@@ -10,6 +10,7 @@ async function generateTicketPDF(ticket: Ticket): Promise<string> {
     // Path to save the PDF locally or stream to response in a real case
     const pdfPath = `./tickets/${ticket.ticket_id}.pdf`;
     doc.pipe(fs.createWriteStream(pdfPath));
+
 
     // Add ticket details
     doc.fontSize(20).text(`Ticket ID: ${ticket.ticket_id}`, 100, 100);
