@@ -1,11 +1,10 @@
-/**
- * Represents a TicketToShow, which has information of a ticket's ID/ServiceType and the counter that is serving it.
- */
+import dayjs, { Dayjs } from 'dayjs';
+
 class TicketToShow {
     ticketId: number;
     serviceType: number;
     counterId: number;
-    called_at: Date; 
+    called_at: Dayjs;
 
     /**
      * Creates a new instance of the TicketToShow class.
@@ -14,11 +13,24 @@ class TicketToShow {
      * @param counterId - The ID of the counter currently serving the ticket.
      * @param called_at - The timestamp when the ticket was called.
      */
-    constructor(ticketId: number, serviceType: number, counterId: number, called_at: Date) {
+    constructor(ticketId: number, serviceType: number, counterId: number, called_at: Dayjs) {
         this.ticketId = ticketId;
         this.serviceType = serviceType;
         this.counterId = counterId;
         this.called_at = called_at;
+    }
+
+    /**
+     * Returns a string representation of the TicketToShow instance.
+     * @returns {string} A string representation of the TicketToShow instance.
+     */
+    toString(): string {
+        return `TicketToShow {
+                    ticketId: ${this.ticketId},
+                    serviceType: ${this.serviceType},
+                    counterId: ${this.counterId},
+                    called_at: ${this.called_at.format('HH:mm:ss')}
+                }`;
     }
 }
 

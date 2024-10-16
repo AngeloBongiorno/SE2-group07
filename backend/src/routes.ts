@@ -1,7 +1,7 @@
 import express from "express"
 import CallCustomerRoutes from "./routes/callCustomerRoutes"
 import ErrorHandler from "./routes/helper"
-import NextCustomerRoutes from "./routes/nextCustomerRoutes"
+// import NextCustomerRoutes from "./routes/nextCustomerRoutes"
 import TicketRoutes from "./routes/TicketRoutes"
 const morgan = require("morgan")
 
@@ -17,7 +17,7 @@ function initRoutes(app: express.Application) {
     app.use(express.urlencoded({ limit: '25mb', extended: true }))
 
     const callCustomerRoutes = new CallCustomerRoutes()
-    const nextCustomerRoutes = new NextCustomerRoutes()
+    // const nextCustomerRoutes = new NextCustomerRoutes()
     const ticketRoutes = new TicketRoutes();
 
 
@@ -26,7 +26,7 @@ function initRoutes(app: express.Application) {
     app.use(`${prefix}/ticketPdfs`, express.static("./ticketPdfs"));
 
     app.use(`${prefix}/callCustomer`, callCustomerRoutes.getRouter())
-    app.use(`${prefix}`, nextCustomerRoutes.getRouter())
+    // app.use(`${prefix}`, nextCustomerRoutes.getRouter())
     app.use(`${prefix}`, ticketRoutes.getRouter())
 
     ErrorHandler.registerErrorHandler(app)

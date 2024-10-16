@@ -1,7 +1,9 @@
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import db from "../db/db";
 import { TicketToShow } from "../models/ticketToShow";
 import { ForeignKeyConstraintError, UniqueConstraintError } from "../errors/dbErrors";
+import { dayjsFromTime, dayjsToTime } from "../helper/dayjs_helper";
+import { WrongFormatError } from "../errors/commonErrors";
 
 class TicketToShowDAO {
     /**
@@ -21,7 +23,7 @@ class TicketToShowDAO {
                         row.ticket_id,
                         row.service_type_id,
                         row.counter_id,
-                        dayjs(row.called_at).toDate()
+                        dayjsFromTime(row.called_at)
                     ));
                     resolve(ticketsToShow);
                     return;
@@ -37,27 +39,27 @@ class TicketToShowDAO {
      * @param {number} ticket_id - The ID of the ticket.
      * @param {number} service_type_id - The ID of the service type.
      * @param {number} counter_id - The ID of the counter.
-     * @param {Date} called_at - The time the ticket was called for service.
+     * @param {Dayjs} called_at - The time the ticket was called for service.
      * @returns {Promise<void>} A promise that resolves when the ticket is inserted.
      */
-    public insertTicketToShow(ticket_id: number, service_type_id: number, counter_id: number, called_at: Date): Promise<void> {
+    public insertTicketToShow(ticket_id: number, service_type_id: number, counter_id: number, called_at: Dayjs): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             try {
                 // Check for null or undefined values
                 if (ticket_id == null || service_type_id == null || counter_id == null || called_at == null) {
-                    reject(new Error("Invalid input: One or more input parameters are null or undefined."));
+                    reject(new WrongFormatError("Invalid input: One or more input parameters are null or undefined."));
                     return;
                 }
 
                 // Check for valid data types
-                if (typeof ticket_id !== 'number' || typeof service_type_id !== 'number' || typeof counter_id !== 'number' || !(called_at instanceof Date)) {
-                    reject(new Error("Invalid input: One or more input parameters have incorrect data types."));
+                if (typeof ticket_id !== 'number' || typeof service_type_id !== 'number' || typeof counter_id !== 'number' || !dayjs.isDayjs(called_at)) {
+                    reject(new WrongFormatError("Invalid input: One or more input parameters have incorrect data types."));
                     return;
                 }
 
                 // Insert the ticket
                 const sql = "INSERT INTO TicketsToShow (ticket_id, service_type_id, counter_id, called_at) VALUES (?, ?, ?, ?);";
-                db.run(sql, [ticket_id, service_type_id, counter_id, dayjs(called_at).toISOString()], (err: Error | null) => {
+                db.run(sql, [ticket_id, service_type_id, counter_id, dayjsToTime(called_at)], (err: Error | null) => {
                     if (err) {
                         if (err.message.includes("FOREIGN KEY constraint failed")) {
                             reject(new ForeignKeyConstraintError);
@@ -86,19 +88,19 @@ class TicketToShowDAO {
             try {
                 // Check for null or undefined values
                 if (ticket_ids == null || ticket_ids.some(id => id == null)) {
-                    reject(new Error("Invalid input: One or more input parameters are null or undefined."));
+                    reject(new WrongFormatError("Invalid input: One or more input parameters are null or undefined."));
                     return;
                 }
 
                 // Check for empty arrays
                 if (ticket_ids.length === 0) {
-                    reject(new Error("Invalid input: The input array is empty."));
+                    reject(new WrongFormatError("Invalid input: The input array is empty."));
                     return;
                 }
 
                 // Check for valid data types
                 if (!Array.isArray(ticket_ids) || ticket_ids.some(id => typeof id !== 'number')) {
-                    reject(new Error("Invalid input: One or more input parameters have incorrect data types."));
+                    reject(new WrongFormatError("Invalid input: One or more input parameters have incorrect data types."));
                     return;
                 }
 
@@ -109,7 +111,7 @@ class TicketToShowDAO {
                         reject(err);
                         return;
                     }
-                    resolve(this.changes);
+                    resolve(this.changes); // eslint-disable-line
                 });
             } catch (error) {
                 reject(error);

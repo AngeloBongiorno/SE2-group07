@@ -8,22 +8,26 @@ const INVALID_FUNCTION_PARAMETER = "Invalid function parameter";
 class GenericError extends Error {
     customMessage: string;
     customCode: number;
+    details: string;
 
-    constructor() {
+    constructor(details: string) {
         super();
         this.customMessage = GENERIC_ERROR;
         this.customCode = 500;
+        this.details = details;
     }
 }
 
 class WrongFormatError extends Error {
     customMessage: string;
     customCode: number;
+    details: string | null;
 
-    constructor() {
+    constructor(details: string | null) {
         super();
         this.customMessage = WRONG_FORMAT;
         this.customCode = 400;
+        this.details = details;
     }
 }
 
