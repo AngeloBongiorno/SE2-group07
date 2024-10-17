@@ -40,6 +40,7 @@ class NextCustomerRoutes {
             (req: any, res: any, next: any) => {
                 let counter_id = req.body.counter_id;
                 if(typeof counter_id === 'number' && counter_id > 0){
+                    console.log("route")
                     this.controller.NextCustomer(counter_id)
                     .then((ticket: Ticket | null) => {
                         if (ticket) {

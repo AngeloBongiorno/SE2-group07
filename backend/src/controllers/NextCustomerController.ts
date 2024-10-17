@@ -22,7 +22,7 @@ class NextCustomerController {
     public async NextCustomer(counter_id: number): Promise<Ticket | null>{
         console.log(counter_id);
         const services:ServiceType[] = await this.counterServiceDAO.getServices(counter_id);
-        //console.log(services);
+        console.log(services);
         let lengths = [];
         let queues = [];
         for(const service of services){

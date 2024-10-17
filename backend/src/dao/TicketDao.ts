@@ -256,7 +256,7 @@
 
 
 
-import db from "../db/db";
+import db, {asyncdb} from "../db/db";
 import { Ticket, Status } from "../models/Ticket";
 import { InvalidInputError, ItemAlreadyExistsError, ItemNotFoundError } from "./errors";
 import dayjs from "dayjs";
@@ -383,7 +383,7 @@ class TicketDAO {
     }*/
 
     async getQueuesLength(service_type_id: number) :Promise<number> {
-        const sql = "SELECT COUNT(*) as count FROM Tickets WHERE service_type_id=?";
+        const sql = "SELECT COUNT(*) as count FROM Tickets WHERE service_type_id=? AND status='waiting'";
         const row = await asyncdb.asyncGet(sql,[service_type_id]);
         return row.count;
     }
