@@ -2,6 +2,7 @@
 
 For all success scenarios, always assume a `200` status code for the API response.  
 For requests with wrong format, use a `400` error code, or better a `WrongFormatError`.  
+(Actually, you should have used a `422`, as that's what our validator returns)  
 For generic errors, use a `500` error code, or better a `GenericError` object.  
 Specific error scenarios will have their corresponding error code.  
 
@@ -125,6 +126,7 @@ Generates a unique ticket for a customer based on the selected service type.
   - Example:
     ```json
     {
+      "message": "ticket created successfully"
       "ticket_code": "A001",
       "service_id": 1,
       "queue_position": 5,
@@ -161,7 +163,7 @@ Returns the status of all service queues, including the number of people waiting
 - Access Constraints: None
 - Additional Constraints: None
 
-### Estimate Waiting Time
+<!-- ### Estimate Waiting Time
 
 #### GET `/queue/estimate-time`
 
@@ -183,6 +185,7 @@ Estimates the waiting time for a given ticket based on the current queue conditi
       "estimated_wait_time": "15:50"
     }
     ```
+
 - Access Constraints: None
 - Additional Constraints: None
 

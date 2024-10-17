@@ -5,11 +5,13 @@ import './App.css'
 import TicketComponent from './components/TicketComponent'
 import SelectorComponent from './components/SelectorComponent'
 import API from './API'
+import { Service } from './API'
+
 
 function App() {
 
-  const [services, setServices] = useState<any>([]);
-  const [selectedService, setSelectedService] = useState<any>();
+  const [services, setServices] = useState<Service[]>([]);
+  const [selectedService, setSelectedService] = useState<Service>();
   const [qrCode, setQrCode] = useState<string | undefined>();
   const [ticketNumber, setTicketNumber] = useState<number | undefined>();
   const [serviceId, setServiceId] = useState<number | undefined>();
@@ -20,7 +22,10 @@ function App() {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await API.getServices();
+        const response  = await API.getServices();
+        if (response === null) {
+          throw new Error;
+        }
         setServices(response);
       } catch (err) {
         console.error('Error fetching services:', err);
@@ -34,6 +39,9 @@ function App() {
       const fetchTicket = async () => {
         try {
           const response = await API.postTicket(selectedService.service_id);
+          if (response === null) {
+            throw new Error;
+          }
           setQrCode(response.qr);
           setTicketNumber(response.ticket_code);
           setServiceId(response.service_id);

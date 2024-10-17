@@ -1,7 +1,9 @@
+import { Dayjs } from 'dayjs';
 import TicketToShowDAO from '../dao/ticketToShowDao';
 import { NoNewTicketError, TicketAlreadyExistsError, TicketNotFoundError } from '../errors/callCustomerErrors';
 import { ForeignKeyConstraintError, UniqueConstraintError } from '../errors/dbErrors';
 import { TicketToShow } from '../models/ticketToShow';
+import { GenericError } from '../errors/commonErrors';
 
 /**
  * Represents a controller for managing tickets to show.
@@ -25,16 +27,16 @@ class CallCustomerController {
      * @throws {ForeignKeyConstraintError} If there is a foreign key constraint violation.
      * @throws {Error} If there is any other error inserting the ticket.
      */
-    async insertTicketToShow(ticket_id: number, service_type_id: number, counter_id: number, called_at: Date): Promise<void> {
+    async insertTicketToShow(ticket_id: number, service_type_id: number, counter_id: number, called_at: Dayjs): Promise<void> {
         try {
             await this.dao.insertTicketToShow(ticket_id, service_type_id, counter_id, called_at);
-        } catch (error) {
+        } catch (error:any ) {
             if (error instanceof UniqueConstraintError) {
                 throw new TicketAlreadyExistsError();
             } else if (error instanceof ForeignKeyConstraintError) {
                 throw new ForeignKeyConstraintError();
             } else {
-                throw error;
+                throw new GenericError(error.message);
             }
         }
     }
@@ -53,8 +55,12 @@ class CallCustomerController {
             } else {
                 return ticketsToShow;
             }
-        } catch (error) {
-            throw error;
+        } catch (error: any) {
+            if (error instanceof NoNewTicketError) {
+                throw new NoNewTicketError();
+            } else {
+                throw new GenericError(error.message);
+            }
         }
     }
 
@@ -71,8 +77,12 @@ class CallCustomerController {
             if (nof_deleted_tickets === 0) {
                 throw new TicketNotFoundError(ticket_ids);
             }
-        } catch (error) {
-            throw error;
+        } catch (error: any) {
+            if (error instanceof TicketNotFoundError) {
+                throw new TicketNotFoundError(ticket_ids);
+            } else {
+            throw new GenericError(error.message);
+            }
         }
     }
 }

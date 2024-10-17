@@ -4,6 +4,7 @@ import CallCustomerController from "../controllers/CallCustomerController"
 import { NoNewTicketError } from "../errors/callCustomerErrors";
 import { body, param } from "express-validator"
 import { TicketToShow } from "../models/ticketToShow";
+import { dayjsFromTime } from "../helper/dayjs_helper";
 
 /**
  * Represents a class that defines the routes for handling the call of customers,
@@ -80,7 +81,7 @@ class CallCustomerRoutes {
                 req.body.ticketId,
                 req.body.serviceTypeId,
                 req.body.counterId,
-                new Date(req.body.called_at)
+                dayjsFromTime(req.body.called_at)
             )   
                 .then(() => res.status(200).end())
                 .catch((err) => {
