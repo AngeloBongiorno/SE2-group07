@@ -82,7 +82,7 @@ class TicketDAO {
     }*/
 
     async getQueuesLength(service_type_id: number) :Promise<number> {
-        const sql = "SELECT COUNT(*) as count FROM Tickets WHERE service_type_id=?";
+        const sql = "SELECT COUNT(*) as count FROM Tickets WHERE service_type_id=? AND status='waiting'";
         const row = await asyncdb.asyncGet(sql,[service_type_id]);
         return row.count;
     }
@@ -114,6 +114,9 @@ class TicketDAO {
     async getFirstTicket(service_type_id: number): Promise<number> {
         const sql = "SELECT ticket_id FROM Tickets WHERE status='waiting' AND service_type_id=? ORDER BY issued_at ASC LIMIT 1";
         const row = await asyncdb.asyncGet(sql,[service_type_id]);
+        if (!row) {
+            throw new Error("No tickets found for the specified service_type_id");
+        }        
         return row.ticket_id;
     }
 
@@ -141,7 +144,7 @@ class TicketDAO {
 
     async setTicketAsCalled(ticket_id: number): Promise<Ticket> {
         const sql = "UPDATE Tickets SET called_at=datetime('now'),status='called' WHERE ticket_id=?";
-        await asyncdb.asyncRun(sql,[ticket_id]);
+        const result = await asyncdb.asyncRun(sql,[ticket_id]);
         const ticket = await this.getTicket2(ticket_id);
         return ticket;
     }
@@ -149,6 +152,9 @@ class TicketDAO {
     async getTicket2(ticket_id: number): Promise<Ticket> {
         const sql = "SELECT * FROM Tickets WHERE ticket_id = ?;"
         const ticket = await asyncdb.asyncGet(sql,[ticket_id]);
+        if (!ticket){
+            throw new Error("ticket not found");
+        }
         return ticket
     }
 

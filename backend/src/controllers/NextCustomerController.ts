@@ -19,7 +19,7 @@ class NextCustomerController {
         this.ticketDAO = new TicketDAO;
     }
 
-    public async NextCustomer(counter_id: string): Promise<Ticket>{
+    public async NextCustomer(counter_id: number): Promise<Ticket | null>{
         console.log(counter_id);
         const services:ServiceType[] = await this.counterServiceDAO.getServices(counter_id);
         //console.log(services);
@@ -35,6 +35,9 @@ class NextCustomerController {
         //console.log(queues);
         //console.log(lengths);
         const max = Math.max(...lengths);
+        if(max ==0){
+            return null;
+        }
         let next_service: ServiceType;
         let queues2:any[] = [];
         for(const i of queues) {

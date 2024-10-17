@@ -73,7 +73,7 @@ public getAllCounterServices(): Promise<CounterService[]> {
         })
     }*/
 
-    async getServices(counter_id: string) :Promise<ServiceType[]> {
+    async getServices(counter_id: number) :Promise<ServiceType[]> {
         try{
             const sql = "SELECT * FROM ServiceTypes s JOIN CounterServices cs ON s.service_type_id = cs.service_type_id WHERE counter_id=?";
             const rows = await asyncdb.asyncAll(sql,[counter_id]);

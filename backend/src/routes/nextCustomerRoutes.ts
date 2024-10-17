@@ -38,9 +38,24 @@ class NextCustomerRoutes {
         this.router.post(
             '/nextCustomer',
             (req: any, res: any, next: any) => {
-                this.controller.NextCustomer(req.body.counter_id)
-                .then((ticket:Ticket) => res.status(200).json(ticket))
-                .catch((err) => next(err))
+                let counter_id = req.body.counter_id;
+                if(typeof counter_id === 'number' && counter_id > 0){
+                    this.controller.NextCustomer(counter_id)
+                    .then((ticket: Ticket | null) => {
+                        if (ticket) {
+                            return res.status(200).json(ticket);
+                        } else{
+                            return res.status(200).end();
+                        }})
+                    .catch((err) => {
+                        console.error(err);
+                        return res.status(500).json({ error: "Internal server error" });
+                    });
+                }
+                else{
+                    return res.status(400).json({ error: "Invalid counter_id" });
+                }
+                
             } 
         )
 
